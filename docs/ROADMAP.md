@@ -5,8 +5,9 @@ _No dates or engineering estimates committed yet. Phase gates prevent scope drif
 **Deliverables:** project vision, principles, format/rights candidates, preliminary large-screen architecture, decision log, open research questions.
 **Exit criteria:** product owner approves brief and priorities.
 
-## Phase 1 — Evidence and positioning
-Review leading readers and current accessibility/content standards; document user jobs, competitor strengths/gaps, legal limitations, technical feasibility and potential differentiation.
+## Phase 1 — Evidence and positioning (RESEARCH DRAFT COMPLETE; awaiting owner review and hands-on validation)
+Reviewed official readers and current accessibility/content standards; documented user jobs, competitive feature overlap, rights constraints, technical candidates and prototype hypotheses in COMPETITIVE_RESEARCH.md, TECHNICAL_FEASIBILITY.md, READER_EXPERIENCE_SPEC.md, and PROTOTYPE_PLAN.md.
+**Still open:** hands-on comparisons, reader usability validation, confirmed platform/format prioritization, costs and final positioning.
 **Exit criteria:** prioritized user problems and defensible product positioning.
 
 ## Phase 2 — Experience system and prototypes
@@ -37,4 +38,4 @@ Regression testing, device matrix, privacy/security review, performance, copyrig
 - No claim of an APK, build or completed feature without actual artifact verification.
 
 ## Next concrete milestone
-Validate device/platform priority and identify the **first two reading journeys** to prototype, then research competitor interactions and relevant format engines.
+Conduct hands-on competitor/engine checks and present low-fidelity interaction maps for **Story** and **Visual** experiences on laptop and tablet. No style or technology is locked. See PROTOTYPE_PLAN.md.
