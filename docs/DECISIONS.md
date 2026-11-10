@@ -14,6 +14,11 @@ _Last reviewed: 11 November 2026_
 | D-009 | OPEN | Reader engines and first supported file formats. | Requires technical research. |
 | D-010 | OPEN | Detailed design system and cinematic motion style. | Await user review of mockups. |
 | D-011 | OPEN | Pricing, business model, sync/server budget and AI features. | Needs evidence and owner agreement. |
+| D-012 | PROPOSED | Story / Visual / Study format-aware experiences under one library. | Competitor overlap means differentiated execution, not raw feature count. |
+| D-013 | PROPOSED | EPUB, PDF and CBZ as the first feasibility test samples. | Covers prose, documents and sequential art without promising release support. |
+| D-014 | PROPOSED | Prototype web-based interactions plus isolated Readium Kotlin spike before stack choice. | Supports laptop/tablet evaluation, preserves optional native paths. |
+| D-015 | PROPOSED | Present three styles: Quiet Editorial, Cinematic Library and Modern Atelier. | Enables owner choice before visual system is locked. |
+| D-016 | CONFIRMED | Do not start coding or finalize a visual design without separate approval. | Preproduction workflow and visual quality gate. |
 
 ## Rules
 A PROPOSED or OPEN item is not permission to implement it. New product decisions should be added here with date and reasoning. Preserve history if a confirmed decision is superseded.
