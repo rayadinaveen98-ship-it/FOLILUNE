@@ -25,4 +25,10 @@ FOLILUNE is a tablet- and laptop-first reading experience in preproduction. The 
 - [Roadmap](docs/ROADMAP.md)
 - [Decision register](docs/DECISIONS.md)
 
+## Phase 1 research
+- [Competitive research and positioning](docs/COMPETITIVE_RESEARCH.md)
+- [Technical feasibility](docs/TECHNICAL_FEASIBILITY.md)
+- [Progressive discovery experience specification](docs/READER_EXPERIENCE_SPEC.md)
+- [Tablet and laptop prototype plan](docs/PROTOTYPE_PLAN.md)
+
 **Important:** Proposed features in these documents are discovery candidates, not approved scope. Implementation technologies, final branding, monetization and detailed visuals remain open decisions.
