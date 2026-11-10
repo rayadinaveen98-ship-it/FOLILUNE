@@ -1,0 +1,40 @@
+# FOLILUNE — Preproduction-to-Release Roadmap
+_No dates or engineering estimates committed yet. Phase gates prevent scope drift._
+
+## Phase 0 — Foundation (NOW)
+**Deliverables:** project vision, principles, format/rights candidates, preliminary large-screen architecture, decision log, open research questions.
+**Exit criteria:** product owner approves brief and priorities.
+
+## Phase 1 — Evidence and positioning
+Review leading readers and current accessibility/content standards; document user jobs, competitor strengths/gaps, legal limitations, technical feasibility and potential differentiation.
+**Exit criteria:** prioritized user problems and defensible product positioning.
+
+## Phase 2 — Experience system and prototypes
+Define design language, interaction grammar and tablet/laptop responsive behavior. Present multiple visual directions and high-fidelity interactive flow prototypes. Review actual device-sized captures.
+**Exit criteria:** approved visual direction, prototype usability findings, core flow acceptance.
+
+## Phase 3 — Technical discovery and architecture
+Verify platform targets, reader engines, file import pipeline, rendering precision, persistence, sync choices, accessibility, security and costs. Build small feasibility spikes, not product feature sprawl.
+**Exit criteria:** technical decisions, measurable performance budgets, feature cutline.
+
+## Phase 4 — Core reading vertical slice
+One complete happy path: legally acquired/imported sample → library → read → resume → bookmark/annotate → restore state; include a separate visual-format test flow if approved.
+**Exit criteria:** usable, stable, visually approved slice.
+
+## Phase 5 — Controlled expansion
+Add approved advanced features in priority order, with discoverability tests, migration coverage, offline robustness and accessibility checks. AI/audio/social features remain optional candidates.
+**Exit criteria:** feature complete for an explicitly agreed release scope.
+
+## Phase 6 — Quality, beta and launch
+Regression testing, device matrix, privacy/security review, performance, copyright/license audit, onboarding, beta feedback, release preparation and post-launch metrics.
+**Exit criteria:** verified quality gates and user-approved release.
+
+## Change-control rules
+- Record new feature ideas in a backlog; do not silently insert into a current phase.
+- Mark each decision as CONFIRMED, PROPOSED or DEFERRED.
+- Never treat concept visuals as approved implementations.
+- Run lightweight checks continuously; reserve comprehensive end-to-end testing for agreed milestones, without ignoring critical regressions.
+- No claim of an APK, build or completed feature without actual artifact verification.
+
+## Next concrete milestone
+Validate device/platform priority and identify the **first two reading journeys** to prototype, then research competitor interactions and relevant format engines.
