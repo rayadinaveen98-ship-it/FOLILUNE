@@ -81,3 +81,10 @@ The v12 tablet reader is unchanged. No logo is locked or integrated into an APK.
 - [169/169 Chromium browser and responsive QA summary](docs/VNEXT_PHASE_C_QA_V04.md)
 
 **Not a release build.** Original demo content and illustration only. Real EPUB.js imports and persistent reading are in the separate existing v12 prototype; Folded Moon remains a candidate logo. The Phase B first-launch and Phase C main-surface reviews are separate HTML artifacts pending owner approval and integration.
+
+### vNext Phase D — Supporting experience (interactive visual study 05)
+- [Open the complete offline Phase D prototype](prototypes/vnext-supporting-experience-phase-d-v05.html)
+- [Screen inventory, data boundaries and owner review gate](docs/VNEXT_PHASE_D_EXPERIENCE_V05.md)
+- [QA: 219/219 Phase D checks, 56/56 Phase C regressions](docs/VNEXT_PHASE_D_QA_V05.md)
+
+Includes a connected sample Search, Collections, Saved Places, Notes, full Settings, Help, empty/loading/error states and More hub. **This is design-only, not a new Android APK.** All demo data is separate from v12. Phase E visual/motion/accessibility polish is next and the owner still needs to approve the visuals.
