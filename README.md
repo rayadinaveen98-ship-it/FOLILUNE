@@ -58,3 +58,12 @@ FOLILUNE is a tablet- and laptop-first reading experience in preproduction. The 
 - [Proposed design tokens](design/tokens/vnext-proposal-v01.json)
 
 **Status:** Phase A1 in owner review. No logo is finalized. This does not modify the functioning v12 Android reader.
+
+### vNext Phase A2/A3 design review
+- [Interactive visual system laboratory](prototypes/vnext-experience-lab-v02.html)
+- [Brand and component specification](docs/VNEXT_DESIGN_SYSTEM_A2_A3.md)
+- [76/76 responsive browser test report](docs/VNEXT_A2_A3_QA.md)
+- [Proposed design tokens](design/tokens/vnext-components-v02.json)
+- [Reproducible SVG primary mark](design/identity-v02/folded-moon.svg) — **provisional, awaiting owner selection**.
+
+The v12 tablet reader is unchanged. No logo is locked or integrated into an APK.
