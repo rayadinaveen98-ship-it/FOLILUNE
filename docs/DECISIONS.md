@@ -22,8 +22,7 @@ _Last reviewed: 11 November 2026_
 | D-017 | CONFIRMED | Modern Atelier is the selected aesthetic baseline; FOLILUNE v2 opened and was accepted as a good working prototype. | Direct user feedback; this does not lock every screen or component. |
 | D-018 | PROPOSED / IN TEST | Explore offline local imports for DRM-free EPUB (text extraction only), TXT and Markdown in an isolated reader proof. | An experimental v3 HTML proof exists; production support not yet approved or verified. |
 | D-019 | OPEN | Select a mature EPUB rendering engine and verify per-book persistence on actual Windows/Android tablet devices. | Initial parser is explicitly experimental and automated restart-storage test unavailable. |
+| D-020 | EXPERIMENT IN TEST | Modern Atelier v4 now uses block-based reading anchors and limited EPUB formatting in its standalone prototype. | Browser-level rendering passed; storage across restart and standard-compliant reader engine are not verified. |
 
 ## Rules
 A PROPOSED or OPEN item is not permission to implement it. New product decisions should be added here with date and reasoning. Preserve history if a confirmed decision is superseded.
-
-| D-020 | EXPERIMENT IN TEST | Modern Atelier v4 now uses block-based reading anchors and limited EPUB formatting in its standalone prototype. | Browser-level rendering passed; storage across restart and standard-compliant reader engine are not verified. |
