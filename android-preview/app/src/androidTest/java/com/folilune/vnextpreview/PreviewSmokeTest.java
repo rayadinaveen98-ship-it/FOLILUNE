@@ -50,6 +50,7 @@ public class PreviewSmokeTest {
     public void seedOfflineWelcomeAndStorage() throws Exception {
         waitFor("document.readyState==='complete' && !!window.FOLILUNE_PREVIEW"
                 + " && !!document.querySelector('#eWelcome iframe')");
+        waitFor("window.__foliluneWelcomeFrameReady===true");
         assertEquals("true", js("location.origin==='https://appassets.androidplatform.net'"));
         assertEquals("true", js("document.querySelector('#eWelcome').hidden===false"));
         assertEquals("true", js("(()=>{const f=document.querySelector('#eWelcome iframe');"
@@ -64,6 +65,7 @@ public class PreviewSmokeTest {
     @Test
     public void verifyStorageAndMainAppStillLoads() throws Exception {
         waitFor("document.readyState==='complete' && !!window.FOLILUNE_PREVIEW");
+        waitFor("window.__foliluneWelcomeFrameReady===true");
         assertEquals("\"survives\"", js("localStorage.getItem('folilune_preview_android_qa')"));
         assertEquals("true", js("!!document.querySelector('#app') && !!document.querySelector('.top-right')"));
         assertEquals("true", js("!!document.querySelector('#eReplay')"));
