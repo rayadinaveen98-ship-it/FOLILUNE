@@ -28,19 +28,20 @@ for(const [width,height] of [[1440,900],[960,760],[390,844]]){
   const first=await page.evaluate(()=>{const d=document.querySelector('#epubStage iframe')?.contentDocument;return {text:d?.body?.innerText||'',image:[...(d?.images||[])].some(x=>x.complete&&x.naturalWidth>0)}});
   check(width+': original chapter displayed',first.text.includes('Chapter One'));
   check(width+': EPUB embedded image decoded',first.image);
-  const frameId=await page.locator('#epubStage iframe').first().getAttribute('id');
-  await page.locator('button[data-panel="settings"]').click();
-  await page.locator('[data-action="font-up"]').click();
-  check(width+': font change preserves live frame',frameId===await page.locator('#epubStage iframe').first().getAttribute('id'));
-  await page.locator('[data-tone="night"]').click();
-  check(width+': night theme',await page.locator('.reader-shell.night').count()===1);
-  await page.locator('[data-panel="contents"]').click();
+  await page.locator('button[data-panel="contents"]').click();
   check(width+': two TOC chapters',await page.locator('[data-epub-href]').count()===2);
   await page.locator('[data-epub-href]').nth(1).click();
   await page.waitForFunction(()=>document.querySelector('#epubStage iframe')?.contentDocument?.body?.innerText?.includes('Chapter Two'),null,{timeout:14000});
   check(width+': real chapter two navigation',true);
   const cfi=await page.evaluate(()=>{const state=JSON.parse(localStorage.getItem('folilune_atelier_v1')||'{}');const id=Object.keys(state.readingPositions||{}).find(x=>x.startsWith('local-'));return state.readingPositions?.[id]?.cfi||''});
   check(width+': real EPUB CFI checkpoint',cfi.startsWith('epubcfi('),cfi.slice(0,65));
+  await page.locator('button[data-panel="settings"]').click();
+  await page.locator('[data-action="font-up"]').click();
+  await page.waitForFunction(()=>document.querySelector('#epubStage iframe')?.contentDocument?.body?.innerText?.includes('Chapter Two'),null,{timeout:11000});
+  check(width+': font resize preserves chapter two content',true);
+  await page.locator('[data-tone="night"]').click();
+  check(width+': night theme',await page.locator('.reader-shell.night').count()===1);
+
   await page.locator('[data-action="bookmark"]').click();
   await page.locator('[data-panel="notes"]').click();
   check(width+': saved EPUB CFI bookmark',await page.locator('[data-epub-cfi]').count()>0);
