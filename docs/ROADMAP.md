@@ -64,3 +64,6 @@ Test the offline v11 experiment on actual Windows Chrome/Edge and Android tablet
 
 ## v12 integrated reading proof — 2026-11-11
 Actual EPUB.js 0.3.93 is bundled into the existing Modern Atelier Library/Reader experimental HTML, preserving the v7 design and demo screens. The integrated Chromium fixture suite recorded 48/48 checks passing across laptop/tablet/phone viewport sizes. Local-file device persistence, old-fixture migration, EPUB3 conformance, security and accessibility remain open. See [INTEGRATED_READER_V12.md](INTEGRATED_READER_V12.md). No production approval yet.
+
+## Android tablet QA checkpoint — 2026-11-11
+The debug APK in draft [PR #3](https://github.com/rayadinaveen98-ship-it/FOLILUNE/pull/3) now has Android API 34 emulator tests: **2/2 imported-book and process-restart recovery checks passed** with actual EPUB.js and IndexedDB. See [ANDROID_TABLET_RELIABILITY_QA_V12.md](ANDROID_TABLET_RELIABILITY_QA_V12.md). Physical tablet storage, native file picker, exact EPUB CFI/bookmark recovery and backup/export remain unverified. These are next Phase 3 gates.
