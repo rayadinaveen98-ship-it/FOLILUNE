@@ -1,0 +1,51 @@
+# Isolated, real EPUB.js integration test. No production deployment, no paid runner.
+name: FOLILUNE — real EPUB engine experiment v11
+on:
+  push:
+    branches:
+      - experiment/epubjs-real-render-v11
+    paths:
+      - '.github/workflows/folilune-epub-v11.yml'
+      - 'experiments/v11/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  real-render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Check out isolated experiment
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Set up Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install pinned reader and browser driver
+        run: npm install --no-audit --no-fund --ignore-scripts --no-save epubjs@0.3.93 jszip@3.10.1 playwright-core@1.56.1
+      - name: Find preinstalled Chrome
+        shell: bash
+        run: |
+          set -euo pipefail
+          CHROME="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
+          if [ -z "$CHROME" ]; then
+            echo "GitHub runner has no Chrome executable; engine not tested."
+            exit 1
+          fi
+          echo "CHROME_PATH=$CHROME" >> "$GITHUB_ENV"
+      - name: Syntax-check unmocked browser suite
+        run: node --check experiments/v11/real-engine.cjs
+      - name: Render original EPUB in real Chromium with installed EPUB.js
+        run: node experiments/v11/real-engine.cjs
+      - name: Archive observed browser results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: folilune-epub-v11-engine-evidence
+          path: experiments/v11/results/
+          if-no-files-found: warn
+          retention-days: 3
