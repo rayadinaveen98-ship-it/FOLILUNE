@@ -30,12 +30,14 @@ jobs:
         with:
           gradle-version: '8.10.2'
 
-      - name: Install Android SDK
-        uses: android-actions/setup-android@v3
-
       - name: Install required SDK packages
+        shell: bash
         run: |
-          sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+          set -euo pipefail
+          echo "Android SDK at: $ANDROID_HOME"
+          command -v sdkmanager
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager --install 'platforms;android-35' 'build-tools;35.0.0'
 
       - name: Assemble signed debug APK
         run: |
