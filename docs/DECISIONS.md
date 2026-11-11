@@ -34,5 +34,9 @@ _Last reviewed: 11 November 2026_
 | D-026 | EXPERIMENT VERIFIED | Modern Atelier v7 supports up to 12 locally packaged raster EPUB images within strict import budgets and preserves accepted inline images through backups. | Headless Chromium passed EPUB image decode, restore, and unsafe URL rejection at laptop/tablet/phone sizes. |
 | D-027 | OPEN | Browser-restart durability and a standards-compliant production EPUB engine. | Local-file navigation remains blocked in the test environment; v7 is not a release-grade parser. |
 
+| D-026 | VERIFIED BASELINE | Keep v7 Modern Atelier unchanged while using four original EPUB fixtures at three viewport sizes as the comparative regression baseline. | 12/12 browser smoke checks pass; this does not assert EPUB conformance, complex RTL support, or browser restart persistence. |
+| D-027 | OPEN / BLOCKED | Runtime integrations of EPUB.js, Readium and Foliate remain unverified because third-party package downloads were unavailable in the test environment. | No engine falsely advertised as integrated; evaluate in a dependency-enabled setup before adoption. |
+| D-028 | PROPOSED | Introduce a reader-engine adapter contract that isolates UI, content storage and reader location semantics. | Keep Modern Atelier UX stable and enable measured engine swaps. See READER_ENGINE_INTERFACE.md. |
+
 ## Rules
 A PROPOSED or OPEN item is not permission to implement it. New product decisions should be added here with date and reasoning. Preserve history if a confirmed decision is superseded.
