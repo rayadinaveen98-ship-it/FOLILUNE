@@ -44,5 +44,9 @@ _Last reviewed: 11 November 2026_
 | D-033 | PROTOTYPE TEST GATE | Provide a v10 real-EPUB.js on-device validation page with a bundled original EPUB and bundled JSZip; keep main v7 untouched. | Structural/UI and explicit failure-state checks pass in three Chromium viewport sizes. Actual external EPUB.js is not downloaded or run in this environment. |
 | D-034 | OPEN / BLOCKED | Require real browser assertions, publication fidelity, CFI restore, network isolation and security checks before considering EPUB.js adopted. | A simulated/blocked engine is not acceptable proof of correct publication rendering. |
 
+| D-035 | VERIFIED REAL ENGINE EXPERIMENT | Unmocked EPUB.js 0.3.93 engine passed nine browser assertions in GitHub Actions (run 42968054882), including decoded image, generated CFI, chapter navigation and CFI restoration. | Actual upstream package was installed/executed on CI; not yet a production engine choice. |
+| D-036 | EXPERIMENT VERIFIED | Preserve a separate fully offline Modern Atelier-styled v11 renderer trial based on the exact CI-tested EPUB.js/JSZip bundles. | Local Chromium smoke tests at three viewport sizes confirmed real rendering and chapter navigation with no remote scripts. |
+| D-037 | OPEN | Browser restart persistence, accessibility, complex EPUB fidelity, security audit, and migration into v7 remain unapproved and unverified. | The validated isolated experiment must not be confused with a complete app or production readiness. |
+
 ## Rules
 A PROPOSED or OPEN item is not permission to implement it. New product decisions should be added here with date and reasoning. Preserve history if a confirmed decision is superseded.
