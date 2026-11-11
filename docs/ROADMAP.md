@@ -77,3 +77,7 @@ Owner approved beginning a comprehensive **visual and experience quality update*
 - **E — Visual QA and sign-off: PENDING.** Original art, motion/copy polish, tablet/desktop screenshots, accessibility and owner approval.
 
 **Do not merge visual choices into the installed APK without explicit approval.** Backup/sync and deep functionality remain in later workstreams.
+
+## vNext A2/A3 review gate — 2026-11-11
+A functioning offline design laboratory now demonstrates identity choices A/B/C (A remains **provisional**), Android foreground/background/monochrome vector layers, app icon mask and 24/48/96px mark studies, paper/night palette, typography, icons, buttons/forms/tabs, empty/loading/error states and Home/Reader/Settings design shells. **76/76 browser interaction/layout checks passed** at four viewports. See [A2/A3 design spec](VNEXT_DESIGN_SYSTEM_A2_A3.md), [QA](VNEXT_A2_A3_QA.md) and [interactive prototype](../prototypes/vnext-experience-lab-v02.html).
+**Next:** owner direction on logo and paper/night rhythm; Phase B splash/welcome/setup prototypes. No production EPUB engine/UI changes or APK released in this design workstream.
