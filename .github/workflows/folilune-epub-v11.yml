@@ -47,6 +47,20 @@ jobs:
         run: node --check experiments/v11/real-engine.cjs
       - name: Render original EPUB in real Chromium with installed EPUB.js
         run: node experiments/v11/real-engine.cjs
+      - name: Preserve the exact tested open-source browser bundles
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p experiments/v11/results/vendor
+          if [ -f node_modules/epubjs/dist/epub.min.js ]; then cp node_modules/epubjs/dist/epub.min.js experiments/v11/results/vendor/epubjs-0.3.93.min.js; fi
+          if [ -f node_modules/jszip/dist/jszip.min.js ]; then cp node_modules/jszip/dist/jszip.min.js experiments/v11/results/vendor/jszip-3.10.1.min.js; fi
+          for src in node_modules/epubjs/license node_modules/epubjs/LICENSE; do
+            if [ -f "$src" ]; then cp "$src" experiments/v11/results/vendor/LICENSE-epubjs.txt; break; fi
+          done
+          for src in node_modules/jszip/LICENSE.markdown node_modules/jszip/LICENSE; do
+            if [ -f "$src" ]; then cp "$src" experiments/v11/results/vendor/LICENSE-jszip.txt; break; fi
+          done
       - name: Archive observed browser results
         if: always()
         uses: actions/upload-artifact@v4
