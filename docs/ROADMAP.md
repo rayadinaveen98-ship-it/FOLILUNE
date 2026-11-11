@@ -43,5 +43,8 @@ Regression testing, device matrix, privacy/security review, performance, copyrig
 - Run lightweight checks continuously; reserve comprehensive end-to-end testing for agreed milestones, without ignoring critical regressions.
 - No claim of an APK, build or completed feature without actual artifact verification.
 
+## v8 verification checkpoint — 2026-11-11
+A reproducible, original-content EPUB fixture kit tested the unchanged Modern Atelier v7 in headless Chromium at laptop, tablet and phone viewport sizes (12/12 smoke checks passed). This **only** verifies the existing limited text-preview behavior, including warnings for unsupported publisher features, and safe rejection of an invalid sample. No maintained EPUB engine has been downloaded or integrated in this execution environment. See [ENGINE_VALIDATION_BASELINE_V8.md](ENGINE_VALIDATION_BASELINE_V8.md) and [READER_ENGINE_INTERFACE.md](READER_ENGINE_INTERFACE.md).
+
 ## Next concrete milestone
 Run a controlled Readium/EPUB.js/Foliate browser and Android feasibility matrix with licensed samples, prioritizing full EPUB fidelity and genuine local persistence; then lock a production engine only after owner review. Modern Atelier remains the chosen visual baseline, with precise screen-level work still open. See EPUB_ENGINE_EVALUATION_V6.md.
