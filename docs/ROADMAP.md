@@ -67,3 +67,6 @@ Actual EPUB.js 0.3.93 is bundled into the existing Modern Atelier Library/Reader
 
 ## Android tablet QA checkpoint — 2026-11-11
 The debug APK in draft [PR #3](https://github.com/rayadinaveen98-ship-it/FOLILUNE/pull/3) now has Android API 34 emulator tests: **2/2 imported-book and process-restart recovery checks passed** with actual EPUB.js and IndexedDB. See [ANDROID_TABLET_RELIABILITY_QA_V12.md](ANDROID_TABLET_RELIABILITY_QA_V12.md). Physical tablet storage, native file picker, exact EPUB CFI/bookmark recovery and backup/export remain unverified. These are next Phase 3 gates.
+
+## Exact EPUB CFI/bookmark Android gate — 2026-11-11
+**PASS (Android 14 AOSP emulator):** Full EPUB.js navigated beyond the start of chapter two, persisted an exact EPUB CFI and bookmark, then restored that same **live rendition CFI** after Android app process death/relaunch. A font resize retained chapter and bookmark. See [ANDROID_CFI_BOOKMARK_QA_V13.md](ANDROID_CFI_BOOKMARK_QA_V13.md) and [passing run 42999357106](https://github.com/rayadinaveen98-ship-it/FOLILUNE/actions/runs/42999357106). Not a physical-tablet, all-EPUB, or exact-position-after-reflow certification. **Next gate:** native export/restore, native file-picker validation and book-corruption/stress handling. Modern Atelier remains unchanged.
