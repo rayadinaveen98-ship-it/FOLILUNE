@@ -81,3 +81,10 @@ Owner approved beginning a comprehensive **visual and experience quality update*
 ## vNext A2/A3 review gate — 2026-11-11
 A functioning offline design laboratory now demonstrates identity choices A/B/C (A remains **provisional**), Android foreground/background/monochrome vector layers, app icon mask and 24/48/96px mark studies, paper/night palette, typography, icons, buttons/forms/tabs, empty/loading/error states and Home/Reader/Settings design shells. **76/76 browser interaction/layout checks passed** at four viewports. See [A2/A3 design spec](VNEXT_DESIGN_SYSTEM_A2_A3.md), [QA](VNEXT_A2_A3_QA.md) and [interactive prototype](../prototypes/vnext-experience-lab-v02.html).
 **Next:** owner direction on logo and paper/night rhythm; Phase B splash/welcome/setup prototypes. No production EPUB engine/UI changes or APK released in this design workstream.
+
+## Phase B — visual first-launch and guided Home review (2026-11-11)
+**REVIEW READY (not approved/released):** [interactive v03](../prototypes/vnext-first-launch-phase-b-v03.html) covers original Folded Moon animation (skippable, reduced-motion), Arrival, optional Stories/Visual/Study intent selection, instant Paper/Night/text-comfort preview, original sample book or explicitly non-working import placeholder, guided Home (3 dismissible steps), sample reader, and returning-user bypass of splash.
+
+The preview inherits Phase A2/A3 tokens and original inline SVG art, and passed **116/116** Playwright Chromium interface checks at four widths, plus a reduced-motion check. The sandbox blocked file and local-host URL navigation, so persistence checks used a **test-only in-memory localStorage stand-in**; real disk persistence and Android device behavior are not asserted. See [screen specification](VNEXT_PHASE_B_EXPERIENCE_V03.md) and [QA report](VNEXT_PHASE_B_QA_V03.md).
+
+**Next:** owner review of first-launch pacing, art and guided Home; then Phase C Home/Library/Reader visual refinement in this separate design branch. No v12 EPUB.js/data modifications, no new production APK, and no deep feature expansion in this design stage.
