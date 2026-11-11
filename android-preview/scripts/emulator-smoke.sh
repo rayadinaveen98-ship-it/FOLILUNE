@@ -19,9 +19,10 @@ adb shell am instrument -w -e class 'com.folilune.vnextpreview.PreviewSmokeTest#
   | tee android-preview/qa-logs/first-run.txt
 grep -q 'OK (1 test)' android-preview/qa-logs/first-run.txt
 
-echo '=== Screenshot: first launch under WebView ==='
-adb shell am start -n com.folilune.vnextpreview/.MainActivity
-sleep 4
+echo '=== Screenshot: clean first launch in separate app process ==='
+adb shell am force-stop com.folilune.vnextpreview
+adb shell am start -W -n com.folilune.vnextpreview/.MainActivity
+sleep 7
 adb shell screencap -p /sdcard/Download/folilune-vnext-preview.png
 adb pull /sdcard/Download/folilune-vnext-preview.png android-preview/qa-logs/android-preview-launch.png
 
