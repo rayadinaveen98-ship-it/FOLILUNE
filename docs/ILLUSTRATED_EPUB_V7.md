@@ -1,7 +1,7 @@
 # FOLILUNE — Illustrated EPUB Preview v7
 **Date:** 2026-11-11
 **Phase:** 3 — Reader engine experimentation
-**Status:** Standalone HTML prototype available as a conversation download; NOT a production EPUB reader.
+**Status:** Standalone HTML prototype committed at [prototypes/modern-atelier-reader-proof-v7.html](../prototypes/modern-atelier-reader-proof-v7.html) and available as a conversation download; NOT a production EPUB reader.
 **Visual direction:** Modern Atelier approved aesthetic, unchanged.
 
 ## Implementation delivered
