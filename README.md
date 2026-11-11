@@ -67,3 +67,10 @@ FOLILUNE is a tablet- and laptop-first reading experience in preproduction. The 
 - [Reproducible SVG primary mark](design/identity-v02/folded-moon.svg) — **provisional, awaiting owner selection**.
 
 The v12 tablet reader is unchanged. No logo is locked or integrated into an APK.
+
+### vNext Phase B — first-launch visual flow (review edition 03)
+- [Interactive offline Phase B experience](prototypes/vnext-first-launch-phase-b-v03.html)
+- [Screen-by-screen interaction blueprint](docs/VNEXT_PHASE_B_EXPERIENCE_V03.md)
+- [Browser validation: 116/116 checks and limitations](docs/VNEXT_PHASE_B_QA_V03.md)
+
+**Review only.** This new welcome/setup/guide/reader preview does not replace the working v12 Android EPUB app and is not a new APK. Final logo selection remains pending.
