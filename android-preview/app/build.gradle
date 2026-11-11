@@ -30,3 +30,10 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.6.2'
     androidTestImplementation 'androidx.test.ext:junit:1.2.1'
 }
+
+tasks.register('bundleVisualPrototype', Copy) {
+    from(rootProject.file('../prototypes/vnext-complete-experience-phase-e-v06.html'))
+    into(project.layout.projectDirectory.dir('src/main/assets'))
+    rename { 'index.html' }
+}
+tasks.named('preBuild').configure { dependsOn tasks.named('bundleVisualPrototype') }
