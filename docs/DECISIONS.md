@@ -41,5 +41,8 @@ _Last reviewed: 11 November 2026_
 | D-031 | EXPERIMENTAL ADAPTER | Keep v7 as verified reference while evaluating v9 EPUB.js adapter in a separate HTML experiment. | v9 shell/offline errors and mocked API wiring passed 6/6, but actual EPUB.js was not downloaded or executed. |
 | D-032 | OPEN / BLOCKED | Do not adopt EPUB.js, assume browser restart persistence, or import confidential EPUBs until real renderer and security validation pass. | Third-party scripts run from pinned CDN; no CSP/SRI review and no actual EPUB engine test in sandbox. |
 
+| D-033 | PROTOTYPE TEST GATE | Provide a v10 real-EPUB.js on-device validation page with a bundled original EPUB and bundled JSZip; keep main v7 untouched. | Structural/UI and explicit failure-state checks pass in three Chromium viewport sizes. Actual external EPUB.js is not downloaded or run in this environment. |
+| D-034 | OPEN / BLOCKED | Require real browser assertions, publication fidelity, CFI restore, network isolation and security checks before considering EPUB.js adopted. | A simulated/blocked engine is not acceptable proof of correct publication rendering. |
+
 ## Rules
 A PROPOSED or OPEN item is not permission to implement it. New product decisions should be added here with date and reasoning. Preserve history if a confirmed decision is superseded.
