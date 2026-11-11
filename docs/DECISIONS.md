@@ -18,7 +18,10 @@ _Last reviewed: 11 November 2026_
 | D-013 | PROPOSED | EPUB, PDF and CBZ as the first feasibility test samples. | Covers prose, documents and sequential art without promising release support. |
 | D-014 | PROPOSED | Prototype web-based interactions plus isolated Readium Kotlin spike before stack choice. | Supports laptop/tablet evaluation, preserves optional native paths. |
 | D-015 | PROPOSED | Present three styles: Quiet Editorial, Cinematic Library and Modern Atelier. | Enables owner choice before visual system is locked. |
-| D-016 | CONFIRMED | Do not start coding or finalize a visual design without separate approval. | Preproduction workflow and visual quality gate. |
+| D-016 | CONFIRMED | Keep the design-review gate before production implementation; approved prototypes may be used for isolated experiments. | Preproduction workflow and visual quality gate. |
+| D-017 | CONFIRMED | Modern Atelier is the selected aesthetic baseline; FOLILUNE v2 opened and was accepted as a good working prototype. | Direct user feedback; this does not lock every screen or component. |
+| D-018 | PROPOSED / IN TEST | Explore offline local imports for DRM-free EPUB (text extraction only), TXT and Markdown in an isolated reader proof. | An experimental v3 HTML proof exists; production support not yet approved or verified. |
+| D-019 | OPEN | Select a mature EPUB rendering engine and verify per-book persistence on actual Windows/Android tablet devices. | Initial parser is explicitly experimental and automated restart-storage test unavailable. |
 
 ## Rules
 A PROPOSED or OPEN item is not permission to implement it. New product decisions should be added here with date and reasoning. Preserve history if a confirmed decision is superseded.
