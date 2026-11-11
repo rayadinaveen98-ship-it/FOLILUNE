@@ -64,3 +64,16 @@ Test the offline v11 experiment on actual Windows Chrome/Edge and Android tablet
 
 ## v12 integrated reading proof — 2026-11-11
 Actual EPUB.js 0.3.93 is bundled into the existing Modern Atelier Library/Reader experimental HTML, preserving the v7 design and demo screens. The integrated Chromium fixture suite recorded 48/48 checks passing across laptop/tablet/phone viewport sizes. Local-file device persistence, old-fixture migration, EPUB3 conformance, security and accessibility remain open. See [INTEGRATED_READER_V12.md](INTEGRATED_READER_V12.md). No production approval yet.
+
+## vNext premium visual experience — parallel workstream (2026-11-11)
+Owner approved beginning a comprehensive **visual and experience quality update**, before the separately planned deeper functionality update. This workstream is isolated from the v12 tablet APK and real EPUB.js engine.
+
+- **A1 — Identity direction: READY FOR OWNER REVIEW.** Modern Atelier 2 brief, 3 original vector logo concepts, light/night palette, skippable welcome motion, Home/Reader visual studies, and 48/48 browser checks at four viewport widths. [Review](../prototypes/vnext-identity-review-v01.html), [brief](VNEXT_BRAND_IDENTITY_V01.md), [QA](VNEXT_IDENTITY_QA_V01.md).
+- **A2 — Final identity: NEXT, NOT YET APPROVED.** Owner selects/refines mark; test monochrome/small-size/adaptive icon, wordmark and artwork language.
+- **A3 — Design system: PENDING.** Finalize color, typography, spacing, icons, controls, focus/hover states, motion tokens, responsive behavior.
+- **B — First-launch: PENDING.** Splash, skippable welcome, optional setup, first-use guide; no forced cloud sign-in.
+- **C — Main surfaces: PENDING.** Home, Library, Story, Comic and Study shells across tablet/laptop widths.
+- **D — Secondary surfaces: PENDING.** Search, notes/highlights UI, collections, settings, import, empty/loading/error, accessibility/help.
+- **E — Visual QA and sign-off: PENDING.** Original art, motion/copy polish, tablet/desktop screenshots, accessibility and owner approval.
+
+**Do not merge visual choices into the installed APK without explicit approval.** Backup/sync and deep functionality remain in later workstreams.
