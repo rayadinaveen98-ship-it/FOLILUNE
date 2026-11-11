@@ -1,11 +1,11 @@
 # FOLILUNE — Preproduction-to-Release Roadmap
 _No dates or engineering estimates committed yet. Phase gates prevent scope drift._
 
-## Phase 0 — Foundation (NOW)
+## Phase 0 — Foundation (COMPLETED: docs initialized)
 **Deliverables:** project vision, principles, format/rights candidates, preliminary large-screen architecture, decision log, open research questions.
 **Exit criteria:** product owner approves brief and priorities.
 
-## Phase 1 — Evidence and positioning (RESEARCH DRAFT COMPLETE; awaiting owner review and hands-on validation)
+## Phase 1 — Evidence and positioning (RESEARCH DOCUMENTED; hands-on comparison and user validation still pending)
 Reviewed official readers and current accessibility/content standards; documented user jobs, competitive feature overlap, rights constraints, technical candidates and prototype hypotheses in COMPETITIVE_RESEARCH.md, TECHNICAL_FEASIBILITY.md, READER_EXPERIENCE_SPEC.md, and PROTOTYPE_PLAN.md.
 **Still open:** hands-on comparisons, reader usability validation, confirmed platform/format prioritization, costs and final positioning.
 **Exit criteria:** prioritized user problems and defensible product positioning.
