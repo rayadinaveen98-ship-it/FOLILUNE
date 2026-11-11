@@ -33,6 +33,8 @@ FOLILUNE is a tablet- and laptop-first reading experience in preproduction. The 
 - [Modern Atelier v3 reader proof](prototypes/modern-atelier-reader-proof-v3.html)
 - [Modern Atelier v4 reader proof](prototypes/modern-atelier-reader-proof-v4.html)
 - [v4 reader-continuity tests and limitations](docs/READER_CONTINUITY_V4.md)
+- [v5 library recovery report (conversation prototype)](docs/LIBRARY_RECOVERY_V5.md)
+- [EPUB engine evaluation (Nov 2026)](docs/ENGINE_EVALUATION_2026-11.md)
 - [Phase 3 engine spike and test limitations](docs/READER_ENGINE_SPIKE_V3.md)
 
 **Important:** Proposed features in these documents are discovery candidates, not approved scope. Implementation technologies, final branding, monetization and detailed visuals remain open decisions.
