@@ -180,6 +180,9 @@ public class ReaderDurabilityTest {
                 + "localStorage.getItem('folilune_android_qa_cfi'))===true})()"));
 
         // Reader preferences may reflow the document, but must not delete the saved bookmark.
+        eval("document.querySelector('[data-panel=settings]').click();true");
+        assertTrue("Reading settings did not expose typography controls",
+                waitFor("!!document.querySelector('[data-action=font-up]')", 10));
         eval("document.querySelector('[data-action=font-up]').click();true");
         assertTrue("Font resizing moved the reader out of the saved chapter",
                 waitFor(LOCATION + "?.index===1", 15));
