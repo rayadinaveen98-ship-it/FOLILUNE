@@ -61,3 +61,6 @@ A **separate offline HTML v11 engine trial** was built from those bundles, retai
 ## Next concrete milestone
 Test the offline v11 experiment on actual Windows Chrome/Edge and Android tablet, including browser-restart saved positions. Evaluate larger licensed EPUBs, publisher CSS/fixed layout/RTL/Indic support, accessible navigation and untrusted-book isolation, then integrate a validated adapter into the full Modern Atelier app only on a separate review branch.
 
+
+## v12 integrated reading proof — 2026-11-11
+Actual EPUB.js 0.3.93 is bundled into the existing Modern Atelier Library/Reader experimental HTML, preserving the v7 design and demo screens. The integrated Chromium fixture suite recorded 48/48 checks passing across laptop/tablet/phone viewport sizes. Local-file device persistence, old-fixture migration, EPUB3 conformance, security and accessibility remain open. See [INTEGRATED_READER_V12.md](INTEGRATED_READER_V12.md). No production approval yet.
