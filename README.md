@@ -44,5 +44,6 @@ FOLILUNE is a tablet- and laptop-first reading experience in preproduction. The 
 - [Reader engine adapter boundary (proposed)](docs/READER_ENGINE_INTERFACE.md)
 - [v9 EPUB.js integration candidate — needs online engine/runtime testing](prototypes/epubjs-engine-spike-v9.html)
 - [v9 test matrix and remaining engine gates](docs/ENGINE_SPIKE_V9.md)
+- [v10 real EPUB.js browser verification (conversation test kit)](docs/REAL_ENGINE_BROWSER_GATE_V10.md)
 
 **Important:** Proposed features in these documents are discovery candidates, not approved scope. Implementation technologies, final branding, monetization and detailed visuals remain open decisions.
