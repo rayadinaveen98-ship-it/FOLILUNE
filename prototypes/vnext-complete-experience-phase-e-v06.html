@@ -354,6 +354,7 @@ window.addEventListener('message',e=>{
   if(!currentFrame || e.source!==currentFrame.contentWindow)return;
   if(!e.data)return;
   if(e.data.type==='folilune:phase-e:ready'){
+    window.__foliluneWelcomeFrameReady=true;
     const prev=readEntry();
     currentFrame.contentWindow.postMessage({type:'folilune:phase-e:init',preferences:{theme:state.theme,textSize:state.readerSize,intents:prev?.intents||[]}},'*');
     return;
