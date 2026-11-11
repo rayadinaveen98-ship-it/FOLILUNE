@@ -31,5 +31,8 @@ _Last reviewed: 11 November 2026_
 | D-024 | BUG FIX VERIFIED | Backup/restore retains paragraph `fraction` anchors (while accepting legacy `offset`). | v5 serialized the wrong field; v6 export–restore roundtrip passed at laptop/tablet/phone widths. |
 | D-025 | OPEN | Real browser-restart IndexedDB tests and maintained EPUB renderer integration. | Sandbox blocks file:// and localhost navigation; require real-device and engine feasibility tests. |
 
+| D-026 | EXPERIMENT VERIFIED | Modern Atelier v7 supports up to 12 locally packaged raster EPUB images within strict import budgets and preserves accepted inline images through backups. | Headless Chromium passed EPUB image decode, restore, and unsafe URL rejection at laptop/tablet/phone sizes. |
+| D-027 | OPEN | Browser-restart durability and a standards-compliant production EPUB engine. | Local-file navigation remains blocked in the test environment; v7 is not a release-grade parser. |
+
 ## Rules
 A PROPOSED or OPEN item is not permission to implement it. New product decisions should be added here with date and reasoning. Preserve history if a confirmed decision is superseded.
