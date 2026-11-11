@@ -50,3 +50,11 @@ FOLILUNE is a tablet- and laptop-first reading experience in preproduction. The 
 - [v11 isolated engine experiment (draft PR, not merged)](https://github.com/rayadinaveen98-ship-it/FOLILUNE/pull/1)
 
 **Important:** Proposed features in these documents are discovery candidates, not approved scope. Implementation technologies, final branding, monetization and detailed visuals remain open decisions.
+
+## vNext — Premium visual experience (design branch / review only)
+- [Identity and art-direction brief](docs/VNEXT_BRAND_IDENTITY_V01.md)
+- [Interactive identity, welcome, Home and Reader preview](prototypes/vnext-identity-review-v01.html)
+- [Viewport and contrast QA](docs/VNEXT_IDENTITY_QA_V01.md)
+- [Proposed design tokens](design/tokens/vnext-proposal-v01.json)
+
+**Status:** Phase A1 in owner review. No logo is finalized. This does not modify the functioning v12 Android reader.
