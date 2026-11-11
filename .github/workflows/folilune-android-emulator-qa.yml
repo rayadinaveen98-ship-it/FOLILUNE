@@ -54,7 +54,7 @@ jobs:
         if: always()
         run: |
           mkdir -p android-app/qa-logs
-          cp /tmp/folilune-seed.log /tmp/folilune-reopen.log android-app/qa-logs/ 2>/dev/null || true
+          cp /tmp/folilune-seed.log /tmp/folilune-reopen.log /tmp/folilune-logcat.txt android-app/qa-logs/ 2>/dev/null || true
 
       - name: Upload QA evidence
         if: always()
