@@ -10,11 +10,13 @@ Reviewed official readers and current accessibility/content standards; documente
 **Still open:** hands-on comparisons, reader usability validation, confirmed platform/format prioritization, costs and final positioning.
 **Exit criteria:** prioritized user problems and defensible product positioning.
 
-## Phase 2 — Experience system and prototypes
+## Phase 2 — Experience system and prototypes (MODERN ATELIER selected; v2 visual prototype approved as a working baseline)
 Define design language, interaction grammar and tablet/laptop responsive behavior. Present multiple visual directions and high-fidelity interactive flow prototypes. Review actual device-sized captures.
 **Exit criteria:** approved visual direction, prototype usability findings, core flow acceptance.
 
-## Phase 3 — Technical discovery and architecture
+## Phase 3 — Technical discovery and architecture (EARLY EXPERIMENT IN PROGRESS)
+An isolated v3 HTML reader proof now exercises simple local TXT/Markdown imports and text-only DRM-free EPUB extraction, plus per-book reading progress. This is **not** production engine selection, and real device persistence has not yet passed. See READER_ENGINE_SPIKE_V3.md.
+
 Verify platform targets, reader engines, file import pipeline, rendering precision, persistence, sync choices, accessibility, security and costs. Build small feasibility spikes, not product feature sprawl.
 **Exit criteria:** technical decisions, measurable performance budgets, feature cutline.
 
