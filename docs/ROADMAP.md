@@ -15,6 +15,8 @@ Define design language, interaction grammar and tablet/laptop responsive behavio
 **Exit criteria:** approved visual direction, prototype usability findings, core flow acceptance.
 
 ## Phase 3 — Technical discovery and architecture (EARLY EXPERIMENT IN PROGRESS)
+A verified **v6** standalone reader proof adds a quiet EPUB compatibility report for omitted publishing content and repairs backup reading-anchor serialization; see [EPUB_ENGINE_EVALUATION_V6.md](EPUB_ENGINE_EVALUATION_V6.md). Real browser-restart persistence and production engine replacement remain unverified.
+
 An isolated v3 HTML reader proof now exercises simple local TXT/Markdown imports and text-only DRM-free EPUB extraction, plus per-book reading progress. This is **not** production engine selection, and real device persistence has not yet passed. See READER_ENGINE_SPIKE_V3.md. A follow-on v4 prototype adds basic EPUB text structure, block anchors, corrected live progress and graceful session-only imports when browser storage fails; its automated UI tests passed in Chromium at three sizes. **Still missing:** file-origin persistence testing, maintained production reader engine selection, and full EPUB/RTL/accessibility conformance. See READER_CONTINUITY_V4.md. An experimental v5 HTML prototype now adds manually exported/restored local library backups and defensive backup validation; it passed Chromium browser smoke tests at laptop/tablet/phone widths. See LIBRARY_RECOVERY_V5.md. A production EPUB engine is **still undecided**; see ENGINE_EVALUATION_2026-11.md.
 
 Verify platform targets, reader engines, file import pipeline, rendering precision, persistence, sync choices, accessibility, security and costs. Build small feasibility spikes, not product feature sprawl.
@@ -40,4 +42,4 @@ Regression testing, device matrix, privacy/security review, performance, copyrig
 - No claim of an APK, build or completed feature without actual artifact verification.
 
 ## Next concrete milestone
-Conduct hands-on competitor/engine checks and present low-fidelity interaction maps for **Story** and **Visual** experiences on laptop and tablet. No style or technology is locked. See PROTOTYPE_PLAN.md.
+Run a controlled Readium/EPUB.js/Foliate browser and Android feasibility matrix with licensed samples, prioritizing full EPUB fidelity and genuine local persistence; then lock a production engine only after owner review. Modern Atelier remains the chosen visual baseline, with precise screen-level work still open. See EPUB_ENGINE_EVALUATION_V6.md.
