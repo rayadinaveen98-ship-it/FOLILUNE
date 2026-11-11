@@ -52,5 +52,7 @@ _Last reviewed: 11 November 2026_
 
 | D-039 | REVIEW READY, NOT APPROVED | Phase C Home/Library/Reader visual prototype v04 uses original sample books and separate Story, Visual and Study modes under Modern Atelier. | Owner accepted moving forward from Phase B. 169/169 browser QA checks passed. No claim of real EPUB/CBZ/PDF import or final design approval; continue to Phase D after review. |
 
+| D-040 | CONFIRMED PROCESS / REVIEW READY | Phase E v06 unifies the first-launch design and main/supporting prototype in one offline visual review; real EPUB.js v12 remains untouched. | 241/241 restricted Chromium checks plus tablet/compact touch-target spot audit; owner sign-off, physical-device/accessibility and real reader integration remain open. |
+
 ## Rules
 A PROPOSED or OPEN item is not permission to implement it. New product decisions should be added here with date and reasoning. Preserve history if a confirmed decision is superseded.
