@@ -31,6 +31,8 @@ FOLILUNE is a tablet- and laptop-first reading experience in preproduction. The 
 - [Progressive discovery experience specification](docs/READER_EXPERIENCE_SPEC.md)
 - [Tablet and laptop prototype plan](docs/PROTOTYPE_PLAN.md)
 - [Modern Atelier v3 reader proof](prototypes/modern-atelier-reader-proof-v3.html)
+- [Modern Atelier v4 reader proof](prototypes/modern-atelier-reader-proof-v4.html)
+- [v4 reader-continuity tests and limitations](docs/READER_CONTINUITY_V4.md)
 - [Phase 3 engine spike and test limitations](docs/READER_ENGINE_SPIKE_V3.md)
 
 **Important:** Proposed features in these documents are discovery candidates, not approved scope. Implementation technologies, final branding, monetization and detailed visuals remain open decisions.
