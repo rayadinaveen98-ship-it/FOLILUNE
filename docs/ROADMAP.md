@@ -52,5 +52,12 @@ An **isolated EPUB.js 0.3.93 adapter candidate** with Modern Atelier UI was comm
 ## v10 browser runtime verification gate — 2026-11-11
 Built a standalone, real-library EPUB.js test page with an original, valid EPUB3 fixture and bundled JSZip. Three viewport smoke tests confirmed the Modern Atelier shell, bundled JSZip, error reporting and prevention of false passes when the network blocks EPUB.js. **Actual EPUB.js rendering is still not verified here**. See [REAL_ENGINE_BROWSER_GATE_V10.md](REAL_ENGINE_BROWSER_GATE_V10.md). The v10 files are distributed as conversation downloads, not yet committed as GitHub prototype source. No production engine chosen.
 
+## v11 — Real EPUB.js engine rendering verified (2026-11-11)
+
+The isolated draft PR [#1](https://github.com/rayadinaveen98-ship-it/FOLILUNE/pull/1) executed **actual epubjs@0.3.93 in GitHub-hosted Chromium**, not a mock. The real engine passed **9/9 browser assertions**: original EPUB metadata, TOC, chapter 1 text, decoded embedded PNG, generated CFI, chapter 2 navigation, CFI restoration, and no uncaught JS exceptions. A follow-up CI run also passed and archived the exact tested EPUB.js and JSZip bundles plus licenses.
+
+A **separate offline HTML v11 engine trial** was built from those bundles, retaining Modern Atelier styling. Local Chromium smoke tests at 1440×900, 960×760 and 390×844 confirmed real EPUB rendering and chapter navigation without external script downloads. **This is not the approved full app, production engine choice, or durability/security certification.** The existing v7 reader remains unchanged. See [REAL_EPUB_ENGINE_V11.md](REAL_EPUB_ENGINE_V11.md).
+
 ## Next concrete milestone
-On a dependency-enabled Windows laptop and Android tablet, click **Run real EPUB test** in the v10 conversation artifact, inspect the actual illustration and TOC, test CFI/checkpoint behavior through a browser restart, then run more complete EPUB examples and security/accessibility checks. Choose a production engine only after measured results and owner review. Modern Atelier remains the selected visual baseline.
+Test the offline v11 experiment on actual Windows Chrome/Edge and Android tablet, including browser-restart saved positions. Evaluate larger licensed EPUBs, publisher CSS/fixed layout/RTL/Indic support, accessible navigation and untrusted-book isolation, then integrate a validated adapter into the full Modern Atelier app only on a separate review branch.
+
