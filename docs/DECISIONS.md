@@ -25,3 +25,5 @@ _Last reviewed: 11 November 2026_
 
 ## Rules
 A PROPOSED or OPEN item is not permission to implement it. New product decisions should be added here with date and reasoning. Preserve history if a confirmed decision is superseded.
+
+| D-020 | EXPERIMENT IN TEST | Modern Atelier v4 now uses block-based reading anchors and limited EPUB formatting in its standalone prototype. | Browser-level rendering passed; storage across restart and standard-compliant reader engine are not verified. |
