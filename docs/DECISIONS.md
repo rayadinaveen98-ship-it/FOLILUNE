@@ -24,5 +24,8 @@ _Last reviewed: 11 November 2026_
 | D-019 | OPEN | Select a mature EPUB rendering engine and verify per-book persistence on actual Windows/Android tablet devices. | Initial parser is explicitly experimental and automated restart-storage test unavailable. |
 | D-020 | EXPERIMENT IN TEST | Modern Atelier v4 now uses block-based reading anchors and limited EPUB formatting in its standalone prototype. | Browser-level rendering passed; storage across restart and standard-compliant reader engine are not verified. |
 
+| D-021 | PROPOSED / IN TEST | Add optional, versioned, local backup/restore for imported books and reader-owned notes to the future product. | v5 recovery prototype passed browser smoke tests, real-device persistence and durability still need validation. |
+| D-022 | OPEN | Choose EPUB engine only after cross-platform fidelity, security and location-preservation spikes. | Readium Web normally needs publication server; Readium Kotlin Android-specific; browser libraries need evaluation. |
+
 ## Rules
 A PROPOSED or OPEN item is not permission to implement it. New product decisions should be added here with date and reasoning. Preserve history if a confirmed decision is superseded.
