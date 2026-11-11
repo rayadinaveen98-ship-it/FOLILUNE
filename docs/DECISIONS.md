@@ -50,5 +50,7 @@ _Last reviewed: 11 November 2026_
 
 | D-038 | VERIFIED — EMULATOR ONLY | Android API 34 WebView retains an imported EPUB in IndexedDB after app force-stop/relaunch and reopens it using EPUB.js. | 2/2 GitHub Actions instrumented tests passed; physical tablet, exact CFI and bookmarks remain unverified. |
 
+| D-039 | VERIFIED — AOSP EMULATOR ONLY | An EPUB.js reading CFI and its bookmark survive a full Android process restart, with exact live rendition CFI restored under unchanged viewport and chapter/bookmark retained after font resize. | Passing API 34 Android WebView instrumented tests 2/2; hardware and exact reflow position still open. |
+
 ## Rules
 A PROPOSED or OPEN item is not permission to implement it. New product decisions should be added here with date and reasoning. Preserve history if a confirmed decision is superseded.
