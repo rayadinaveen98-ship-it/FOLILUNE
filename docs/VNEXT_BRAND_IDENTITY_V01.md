@@ -33,7 +33,7 @@ All marks are simple, reproducible vector SVG (no image-model dependency, no spe
 | Ink | `#26342E` | `#F3F1E9` | Main body text |
 | Secondary text | `#516359` | `#C3CEC6` | Descriptions/metadata |
 | Moss | `#365747` | `#A9C6B1` | Primary emphasis/actions |
-| Brass | `#A57742` | `#DCBA87` | Tiny highlights, editorial signals |
+| Brass | `#94632C` | `#DCBA87` | Tiny highlights, editorial signals |
 | Line | `#D9D8CB` | `#34483F` | Dividers |
 | Error | `#9C4238` | `#F5A99F` | Inline errors |
 
