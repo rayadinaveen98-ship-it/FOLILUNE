@@ -1,0 +1,34 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.folilune.tablet'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'com.folilune.tablet'
+        minSdk 26
+        targetSdk 34
+        versionCode 12
+        versionName '0.12.0-tablet-test'
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    buildTypes {
+        debug { debuggable true }
+        release { minifyEnabled false }
+    }
+}
+
+
+dependencies {
+    androidTestImplementation 'androidx.test:core:1.6.1'
+    androidTestImplementation 'androidx.test:runner:1.6.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.2.1'
+}

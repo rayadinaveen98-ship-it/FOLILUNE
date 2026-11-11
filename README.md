@@ -50,3 +50,9 @@ FOLILUNE is a tablet- and laptop-first reading experience in preproduction. The 
 - [v11 isolated engine experiment (draft PR, not merged)](https://github.com/rayadinaveen98-ship-it/FOLILUNE/pull/1)
 
 **Important:** Proposed features in these documents are discovery candidates, not approved scope. Implementation technologies, final branding, monetization and detailed visuals remain open decisions.
+
+## Android tablet QA
+- [Android WebView process-restart persistence report](docs/ANDROID_TABLET_RELIABILITY_QA_V12.md)
+
+## Latest Android reader evidence
+- [Exact CFI and bookmark recovery after process death — emulator passed](docs/ANDROID_CFI_BOOKMARK_QA_V13.md)

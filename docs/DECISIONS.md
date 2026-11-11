@@ -48,5 +48,9 @@ _Last reviewed: 11 November 2026_
 | D-036 | EXPERIMENT VERIFIED | Preserve a separate fully offline Modern Atelier-styled v11 renderer trial based on the exact CI-tested EPUB.js/JSZip bundles. | Local Chromium smoke tests at three viewport sizes confirmed real rendering and chapter navigation with no remote scripts. |
 | D-037 | OPEN | Browser restart persistence, accessibility, complex EPUB fidelity, security audit, and migration into v7 remain unapproved and unverified. | The validated isolated experiment must not be confused with a complete app or production readiness. |
 
+| D-038 | VERIFIED — EMULATOR ONLY | Android API 34 WebView retains an imported EPUB in IndexedDB after app force-stop/relaunch and reopens it using EPUB.js. | 2/2 GitHub Actions instrumented tests passed; physical tablet, exact CFI and bookmarks remain unverified. |
+
+| D-039 | VERIFIED — AOSP EMULATOR ONLY | An EPUB.js reading CFI and its bookmark survive a full Android process restart, with exact live rendition CFI restored under unchanged viewport and chapter/bookmark retained after font resize. | Passing API 34 Android WebView instrumented tests 2/2; hardware and exact reflow position still open. |
+
 ## Rules
 A PROPOSED or OPEN item is not permission to implement it. New product decisions should be added here with date and reasoning. Preserve history if a confirmed decision is superseded.
