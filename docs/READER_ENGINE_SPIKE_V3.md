@@ -4,7 +4,7 @@
 **Visual baseline:** Modern Atelier (approved direction)
 
 ## Artifact and scope
-Produced a standalone, offline HTML test artifact in the ChatGPT conversation named `FOLILUNE_Modern_Atelier_Reader_Proof_v3.html`. A small original demo EPUB, `FOLILUNE_Original_Test_Book.epub`, was also created for testing. These user-deliverable files are **not yet committed to this GitHub repository**; this document records their purpose and the next validation gate. Do not represent them as deployed or native apps.
+Produced a standalone, offline HTML test artifact in the ChatGPT conversation named `FOLILUNE_Modern_Atelier_Reader_Proof_v3.html`. A small original demo EPUB, `FOLILUNE_Original_Test_Book.epub`, was also created for testing. The HTML prototype source is now preserved at [prototypes/modern-atelier-reader-proof-v3.html](../prototypes/modern-atelier-reader-proof-v3.html). The original sample EPUB remains a conversation download for device tests, not a repository fixture yet. Neither file represents a deployed or native app.
 
 ### Preserved
 - Home and Library, responsive tablet/laptop/phone visual shell.
