@@ -88,3 +88,11 @@ The v12 tablet reader is unchanged. No logo is locked or integrated into an APK.
 - [QA: 219/219 Phase D checks, 56/56 Phase C regressions](docs/VNEXT_PHASE_D_QA_V05.md)
 
 Includes a connected sample Search, Collections, Saved Places, Notes, full Settings, Help, empty/loading/error states and More hub. **This is design-only, not a new Android APK.** All demo data is separate from v12. Phase E visual/motion/accessibility polish is next and the owner still needs to approve the visuals.
+
+### vNext Phase E — complete visual experience v06 (review edition)
+- [Open one offline prototype from welcome through all reading and supporting screens](prototypes/vnext-complete-experience-phase-e-v06.html)
+- [Complete experience and architecture boundary](docs/VNEXT_PHASE_E_EXPERIENCE_V06.md)
+- [241/241 Chromium tests and limitations](docs/VNEXT_PHASE_E_QA_V06.md)
+- [Visual approval checklist](docs/VNEXT_VISUAL_APPROVAL_GATE_V06.md)
+
+**Status: visually integrated, NOT v12 EPUB.js integration or an Android release.** The v12 reader, imported files and user CFI/bookmarks remain unchanged. Brand sign-off and physical-device/accessibility checks are pending. Full functionality and Gmail/Google Drive sync belong to later separately authorized engineering work.
