@@ -1,6 +1,5 @@
 package com.folilune.tablet;
 
-import android.app.Activity;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 
@@ -35,7 +34,7 @@ public class ReaderDurabilityTest {
     private String eval(String script) throws Exception {
         CountDownLatch done = new CountDownLatch(1);
         AtomicReference<String> result = new AtomicReference<>();
-        scenario.getScenario().onActivity((Activity activity) -> {
+        scenario.getScenario().onActivity(activity -> {
             ViewGroup root = activity.findViewById(android.R.id.content);
             WebView web = (WebView) root.getChildAt(0);
             web.evaluateJavascript(script, value -> {
