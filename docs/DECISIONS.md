@@ -27,5 +27,9 @@ _Last reviewed: 11 November 2026_
 | D-021 | PROPOSED / IN TEST | Add optional, versioned, local backup/restore for imported books and reader-owned notes to the future product. | v5 recovery prototype passed browser smoke tests, real-device persistence and durability still need validation. |
 | D-022 | OPEN | Choose EPUB engine only after cross-platform fidelity, security and location-preservation spikes. | Readium Web normally needs publication server; Readium Kotlin Android-specific; browser libraries need evaluation. |
 
+| D-023 | EXPERIMENT VERIFIED | v6 explicitly labels DRM-free EPUB imports as **text previews** and allows a reader to expand detected fidelity limitations inside Reading settings. | Prevent silent omission of book images/links/layout; detection is heuristic, not full conformance. |
+| D-024 | BUG FIX VERIFIED | Backup/restore retains paragraph `fraction` anchors (while accepting legacy `offset`). | v5 serialized the wrong field; v6 export–restore roundtrip passed at laptop/tablet/phone widths. |
+| D-025 | OPEN | Real browser-restart IndexedDB tests and maintained EPUB renderer integration. | Sandbox blocks file:// and localhost navigation; require real-device and engine feasibility tests. |
+
 ## Rules
 A PROPOSED or OPEN item is not permission to implement it. New product decisions should be added here with date and reasoning. Preserve history if a confirmed decision is superseded.
