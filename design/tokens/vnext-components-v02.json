@@ -1,0 +1,98 @@
+{
+  "meta": {
+    "product": "FOLILUNE",
+    "version": "vNext A2/A3 proposal 02",
+    "approval": "PENDING",
+    "inherits": "Modern Atelier",
+    "logo": "Folded Moon working; B/C retained"
+  },
+  "color": {
+    "paper": {
+      "canvas": "#F5F2EA",
+      "surface": "#FFFCF5",
+      "subtle": "#EFECE3",
+      "border": "#D9D9CB",
+      "ink": "#26342E",
+      "secondary": "#516359",
+      "moss": "#365747",
+      "sage": "#E1E9DF",
+      "brass": "#94632C",
+      "danger": "#9C4238"
+    },
+    "night": {
+      "canvas": "#101A18",
+      "surface": "#1B2925",
+      "subtle": "#26352E",
+      "border": "#34483F",
+      "ink": "#F3F1E9",
+      "secondary": "#C3CEC6",
+      "moss": "#A9C6B1",
+      "sage": "#273E34",
+      "brass": "#DCBA87",
+      "danger": "#F5A99F"
+    }
+  },
+  "typography": {
+    "display": "Georgia, serif",
+    "ui": "system-ui, Segoe UI, sans-serif",
+    "scalePx": {
+      "hero": 52,
+      "screen": 36,
+      "section": 25,
+      "card": 18,
+      "body": 16,
+      "supporting": 14,
+      "label": 12
+    },
+    "reader": {
+      "fontSizePx": 18,
+      "lineHeight": 1.7,
+      "maxWidthPx": 760
+    }
+  },
+  "rhythmPx": [
+    4,
+    8,
+    12,
+    16,
+    24,
+    32,
+    40,
+    48,
+    64
+  ],
+  "radiiPx": {
+    "control": 12,
+    "card": 20,
+    "hero": 28,
+    "pill": 100
+  },
+  "icons": {
+    "viewbox": 24,
+    "strokeWidth": 1.8,
+    "style": "round caps and joins",
+    "defaultPx": 24,
+    "touchTargetAndroidDp": 48,
+    "webCssPx": 44
+  },
+  "responsive": {
+    "tabletPortraitBelowPx": 860,
+    "tabletLandscapeBelowPx": 1190,
+    "compactBelowPx": 620
+  },
+  "motion": {
+    "firstLaunchTargetMs": 1600,
+    "skippable": true,
+    "transitionMs": 200,
+    "reducedMotion": "disable animations"
+  },
+  "assets": {
+    "primary": "design/identity-v02/folded-moon.svg",
+    "alternates": [
+      "design/identity-v02/leafbound-f.svg",
+      "design/identity-v02/story-aperture.svg"
+    ],
+    "android": "design/identity-v02/android-foreground.svg",
+    "finalized": false
+  }
+}

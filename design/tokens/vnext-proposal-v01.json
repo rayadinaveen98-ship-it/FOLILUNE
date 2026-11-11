@@ -1,0 +1,96 @@
+{
+  "metadata": {
+    "product": "FOLILUNE",
+    "version": "vNext-identity-review-0.1",
+    "status": "proposed-not-owner-approved",
+    "basis": "Modern Atelier approved working aesthetic",
+    "note": "Review candidate tokens only; do not modify v12 APK."
+  },
+  "color": {
+    "paper": {
+      "canvas": "#F5F2EA",
+      "surface": "#FFFCF5",
+      "mutedSurface": "#ECE6DA",
+      "ink": "#26342E",
+      "secondaryText": "#516359",
+      "primary": "#365747",
+      "accent": "#94632C",
+      "border": "#D9D8CB",
+      "error": "#9C4238"
+    },
+    "night": {
+      "canvas": "#101A18",
+      "surface": "#1B2925",
+      "mutedSurface": "#26352E",
+      "ink": "#F3F1E9",
+      "secondaryText": "#C3CEC6",
+      "primary": "#A9C6B1",
+      "accent": "#DCBA87",
+      "border": "#34483F",
+      "error": "#F5A99F"
+    }
+  },
+  "spacing": {
+    "unit": 4,
+    "stepsPx": [
+      4,
+      8,
+      12,
+      16,
+      24,
+      32,
+      48,
+      64
+    ]
+  },
+  "radiusPx": {
+    "control": 12,
+    "card": 20,
+    "hero": 26
+  },
+  "typePx": {
+    "hero": 44,
+    "screenHeading": 32,
+    "sectionHeading": 24,
+    "cardHeading": 18,
+    "body": 16,
+    "secondary": 14,
+    "label": 12,
+    "proseDefault": 18,
+    "proseMin": 16,
+    "proseMax": 30
+  },
+  "reader": {
+    "defaultLineHeight": 1.65,
+    "targetCharactersPerLine": [
+      55,
+      75
+    ]
+  },
+  "icons": {
+    "defaultSizePx": 24,
+    "compactSizePx": 20,
+    "strokeWidthAt24": 1.9,
+    "cap": "round",
+    "join": "round"
+  },
+  "touchTarget": {
+    "androidDp": 48,
+    "webCssPx": 44
+  },
+  "layout": {
+    "compactBelowPx": 640,
+    "tabletPortraitBelowPx": 900,
+    "tabletLandscapeBelowPx": 1200,
+    "desktopFromPx": 1200,
+    "readerMeasureMinPx": 680,
+    "readerMeasureMaxPx": 780
+  },
+  "motion": {
+    "firstLaunchTargetMs": 1800,
+    "firstLaunchSkippable": true,
+    "returnLaunchMaxMs": 350,
+    "uiTransitionTargetMaxMs": 250,
+    "reducedMotion": "no-animation-equivalent"
+  }
+}

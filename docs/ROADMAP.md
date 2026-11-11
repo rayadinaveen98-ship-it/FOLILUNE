@@ -64,3 +64,50 @@ Test the offline v11 experiment on actual Windows Chrome/Edge and Android tablet
 
 ## v12 integrated reading proof — 2026-11-11
 Actual EPUB.js 0.3.93 is bundled into the existing Modern Atelier Library/Reader experimental HTML, preserving the v7 design and demo screens. The integrated Chromium fixture suite recorded 48/48 checks passing across laptop/tablet/phone viewport sizes. Local-file device persistence, old-fixture migration, EPUB3 conformance, security and accessibility remain open. See [INTEGRATED_READER_V12.md](INTEGRATED_READER_V12.md). No production approval yet.
+
+## vNext premium visual experience — parallel workstream (2026-11-11)
+Owner approved beginning a comprehensive **visual and experience quality update**, before the separately planned deeper functionality update. This workstream is isolated from the v12 tablet APK and real EPUB.js engine.
+
+- **A1 — Identity direction: READY FOR OWNER REVIEW.** Modern Atelier 2 brief, 3 original vector logo concepts, light/night palette, skippable welcome motion, Home/Reader visual studies, and 48/48 browser checks at four viewport widths. [Review](../prototypes/vnext-identity-review-v01.html), [brief](VNEXT_BRAND_IDENTITY_V01.md), [QA](VNEXT_IDENTITY_QA_V01.md).
+- **A2 — Final identity: NEXT, NOT YET APPROVED.** Owner selects/refines mark; test monochrome/small-size/adaptive icon, wordmark and artwork language.
+- **A3 — Design system: PENDING.** Finalize color, typography, spacing, icons, controls, focus/hover states, motion tokens, responsive behavior.
+- **B — First-launch: PENDING.** Splash, skippable welcome, optional setup, first-use guide; no forced cloud sign-in.
+- **C — Main surfaces: PENDING.** Home, Library, Story, Comic and Study shells across tablet/laptop widths.
+- **D — Secondary surfaces: PENDING.** Search, notes/highlights UI, collections, settings, import, empty/loading/error, accessibility/help.
+- **E — Visual QA and sign-off: PENDING.** Original art, motion/copy polish, tablet/desktop screenshots, accessibility and owner approval.
+
+**Do not merge visual choices into the installed APK without explicit approval.** Backup/sync and deep functionality remain in later workstreams.
+
+## vNext A2/A3 review gate — 2026-11-11
+A functioning offline design laboratory now demonstrates identity choices A/B/C (A remains **provisional**), Android foreground/background/monochrome vector layers, app icon mask and 24/48/96px mark studies, paper/night palette, typography, icons, buttons/forms/tabs, empty/loading/error states and Home/Reader/Settings design shells. **76/76 browser interaction/layout checks passed** at four viewports. See [A2/A3 design spec](VNEXT_DESIGN_SYSTEM_A2_A3.md), [QA](VNEXT_A2_A3_QA.md) and [interactive prototype](../prototypes/vnext-experience-lab-v02.html).
+**Next:** owner direction on logo and paper/night rhythm; Phase B splash/welcome/setup prototypes. No production EPUB engine/UI changes or APK released in this design workstream.
+
+## Phase B — visual first-launch and guided Home review (2026-11-11)
+**REVIEW READY (not approved/released):** [interactive v03](../prototypes/vnext-first-launch-phase-b-v03.html) covers original Folded Moon animation (skippable, reduced-motion), Arrival, optional Stories/Visual/Study intent selection, instant Paper/Night/text-comfort preview, original sample book or explicitly non-working import placeholder, guided Home (3 dismissible steps), sample reader, and returning-user bypass of splash.
+
+The preview inherits Phase A2/A3 tokens and original inline SVG art, and passed **116/116** Playwright Chromium interface checks at four widths, plus a reduced-motion check. The sandbox blocked file and local-host URL navigation, so persistence checks used a **test-only in-memory localStorage stand-in**; real disk persistence and Android device behavior are not asserted. See [screen specification](VNEXT_PHASE_B_EXPERIENCE_V03.md) and [QA report](VNEXT_PHASE_B_QA_V03.md).
+
+**Next:** owner review of first-launch pacing, art and guided Home; then Phase C Home/Library/Reader visual refinement in this separate design branch. No v12 EPUB.js/data modifications, no new production APK, and no deep feature expansion in this design stage.
+
+## vNext Phase C — Main surfaces visual review (2026-11-11)
+**READY FOR OWNER VISUAL REVIEW, NOT PRODUCTION APPROVED.** The offline [Phase C interactive experience](../prototypes/vnext-main-surfaces-phase-c-v04.html) implements connected Home, Library and three visually distinct reading modes (Story, Visual, Study), plus the preliminary appearance/settings shell. The Library has original vector cover artwork, sample search/filter/sort and grid/list views. Story uses three original prose sample chapters, contents, local demo bookmarks, appearance and typography controls. Visual uses original three-part manual art navigation; Study has a notes split-pane **visual example**. All unsupported real EPUB, CBZ, PDF, annotation and import capabilities are explicitly presented as demos or future work.
+
+**QA:** 169/169 Chromium checks passed across 1440×900, 960×760, 768×1024 and 390×844, plus keyboard Ctrl+K. QA caught and fixed a real compact reading width regression (46px paper → 390px paper / 344px prose at 390px) and mobile modal stacking; see [Phase C specification](VNEXT_PHASE_C_EXPERIENCE_V04.md) and [QA report](VNEXT_PHASE_C_QA_V04.md).
+
+**Ownership boundary:** This Phase C is a separate review HTML using Phase B's design language, not an APK and not yet one merged flow with Phase B. The working v12 Android EPUB.js reader and all of its user data remain unchanged. **Next upon approval:** Phase D settings/search/collections/notes/help and full empty/loading/error screens; Phase E visual and accessibility QA, then supervised integration with EPUB engine in a later stage. Full functionality expansion remains separately staged.
+
+## Phase D — Supporting screens and settings (2026-11-11)
+**REVIEW READY, NOT OWNER APPROVED.** An interactive [Phase D v05 prototype](../prototypes/vnext-supporting-experience-phase-d-v05.html) now extends Phase C with connected sample-wide Search; custom demo Collections; Saved sample chapter bookmarks; sample Notes/Highlights; grouped Settings (Appearance, Reading, Library, Accessibility, Privacy & Data, About); searchable Help; empty/loading/error previews; and a compact More hub. Paper/Night design, original SVG book covers and all Phase C main reader screens remain intact.
+
+**Verification:** [QA report](VNEXT_PHASE_D_QA_V05.md) records **219/219 Phase D checks plus 56/56 Phase C regression checks** in Chromium at laptop, tablet landscape, tablet portrait and compact widths, including search, keyboard shortcut, navigation, typography, dialogs, responsiveness, no page errors or remote dependencies. Uses headless HTML `set_content`; this does not certify native browser storage, actual Android hardware or EPUB.js fidelity. See [design spec](VNEXT_PHASE_D_EXPERIENCE_V05.md).
+
+**Next:** Phase E final cross-screen art, animation, typography, copy and accessibility QA, with explicit owner sign-off on any revised visual choices. Preserve the functioning v12 APK and all EPUB user data; full implementation and cloud/sync are separate later milestones. Do not silently merge this design branch.
+
+## Phase E — complete visual journey and polish (2026-11-11)
+**REVIEW READY; NOT A PRODUCTION BUILD.** [Integrated offline vNext experience v06](../prototypes/vnext-complete-experience-phase-e-v06.html) unites Phase B animated welcome, optional first-run setup and guided Home with Phase D main and supporting reading-world screens. Preserves Modern Atelier, the provisional Folded Moon mark and original illustrations. Skippable/reduced-motion intro, live paper/night and reader-size preference handoff, replay from Home without losing sample bookmarks, returning-user UI and progressive navigation are present.
+
+**Browser verification:** [QA](VNEXT_PHASE_E_QA_V06.md) — **241/241 checks passed** at 1440×900, 960×760, 768×1024, 390×844 and 320×720 plus reduced-motion, including functional Skip intro, unified navigation, demo bookmarks, preview preferences, simulated return and no external network requests. Touch-target spot checks at 390px and 768px across six screens found no visible buttons smaller than 44×44 CSS px after fixes.
+
+**Crucial constraints:** Playwright test used `page.set_content` and an explicit in-memory storage shim because file/localhost navigation was blocked: it is **not proof of real persistent browser storage or native Android behavior**. New visual prototype includes **no real EPUB import or v12 engine hookup**; existing v12 Android APK and data were not modified. Brand logo, owner visual signoff, real device and accessibility QA remain open. See [experience spec](VNEXT_PHASE_E_EXPERIENCE_V06.md) and [visual sign-off matrix](VNEXT_VISUAL_APPROVAL_GATE_V06.md).
+
+**After visual approval:** create a separate controlled integration branch, faithfully adapt approved components to the real EPUB.js engine and persisted data (with migration/CI/real tablet verification), **then** begin the major functionality experience update. Google account/Drive backup is explicitly deferred and needs separate authorization.

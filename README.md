@@ -50,3 +50,49 @@ FOLILUNE is a tablet- and laptop-first reading experience in preproduction. The 
 - [v11 isolated engine experiment (draft PR, not merged)](https://github.com/rayadinaveen98-ship-it/FOLILUNE/pull/1)
 
 **Important:** Proposed features in these documents are discovery candidates, not approved scope. Implementation technologies, final branding, monetization and detailed visuals remain open decisions.
+
+## vNext — Premium visual experience (design branch / review only)
+- [Identity and art-direction brief](docs/VNEXT_BRAND_IDENTITY_V01.md)
+- [Interactive identity, welcome, Home and Reader preview](prototypes/vnext-identity-review-v01.html)
+- [Viewport and contrast QA](docs/VNEXT_IDENTITY_QA_V01.md)
+- [Proposed design tokens](design/tokens/vnext-proposal-v01.json)
+
+**Status:** Phase A1 in owner review. No logo is finalized. This does not modify the functioning v12 Android reader.
+
+### vNext Phase A2/A3 design review
+- [Interactive visual system laboratory](prototypes/vnext-experience-lab-v02.html)
+- [Brand and component specification](docs/VNEXT_DESIGN_SYSTEM_A2_A3.md)
+- [76/76 responsive browser test report](docs/VNEXT_A2_A3_QA.md)
+- [Proposed design tokens](design/tokens/vnext-components-v02.json)
+- [Reproducible SVG primary mark](design/identity-v02/folded-moon.svg) — **provisional, awaiting owner selection**.
+
+The v12 tablet reader is unchanged. No logo is locked or integrated into an APK.
+
+### vNext Phase B — first-launch visual flow (review edition 03)
+- [Interactive offline Phase B experience](prototypes/vnext-first-launch-phase-b-v03.html)
+- [Screen-by-screen interaction blueprint](docs/VNEXT_PHASE_B_EXPERIENCE_V03.md)
+- [Browser validation: 116/116 checks and limitations](docs/VNEXT_PHASE_B_QA_V03.md)
+
+**Review only.** This new welcome/setup/guide/reader preview does not replace the working v12 Android EPUB app and is not a new APK. Final logo selection remains pending.
+
+### vNext Phase C — Main reading surfaces (review only)
+- [Offline interactive Home / Library / Story / Visual / Study experience](prototypes/vnext-main-surfaces-phase-c-v04.html)
+- [Phase C composition and interaction specification](docs/VNEXT_PHASE_C_EXPERIENCE_V04.md)
+- [169/169 Chromium browser and responsive QA summary](docs/VNEXT_PHASE_C_QA_V04.md)
+
+**Not a release build.** Original demo content and illustration only. Real EPUB.js imports and persistent reading are in the separate existing v12 prototype; Folded Moon remains a candidate logo. The Phase B first-launch and Phase C main-surface reviews are separate HTML artifacts pending owner approval and integration.
+
+### vNext Phase D — Supporting experience (interactive visual study 05)
+- [Open the complete offline Phase D prototype](prototypes/vnext-supporting-experience-phase-d-v05.html)
+- [Screen inventory, data boundaries and owner review gate](docs/VNEXT_PHASE_D_EXPERIENCE_V05.md)
+- [QA: 219/219 Phase D checks, 56/56 Phase C regressions](docs/VNEXT_PHASE_D_QA_V05.md)
+
+Includes a connected sample Search, Collections, Saved Places, Notes, full Settings, Help, empty/loading/error states and More hub. **This is design-only, not a new Android APK.** All demo data is separate from v12. Phase E visual/motion/accessibility polish is next and the owner still needs to approve the visuals.
+
+### vNext Phase E — complete visual experience v06 (review edition)
+- [Open one offline prototype from welcome through all reading and supporting screens](prototypes/vnext-complete-experience-phase-e-v06.html)
+- [Complete experience and architecture boundary](docs/VNEXT_PHASE_E_EXPERIENCE_V06.md)
+- [241/241 Chromium tests and limitations](docs/VNEXT_PHASE_E_QA_V06.md)
+- [Visual approval checklist](docs/VNEXT_VISUAL_APPROVAL_GATE_V06.md)
+
+**Status: visually integrated, NOT v12 EPUB.js integration or an Android release.** The v12 reader, imported files and user CFI/bookmarks remain unchanged. Brand sign-off and physical-device/accessibility checks are pending. Full functionality and Gmail/Google Drive sync belong to later separately authorized engineering work.
