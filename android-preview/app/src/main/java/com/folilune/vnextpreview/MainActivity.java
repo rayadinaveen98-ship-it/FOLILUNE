@@ -87,8 +87,13 @@ public final class MainActivity extends Activity {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 Uri uri = request.getUrl();
-                // Never navigate outside the single bundled prototype.
-                return !PAGE.equals(uri.toString());
+                // Only block external http(s). A sandboxed iframe uses about:srcdoc;
+                // blocking non-network browser schemes makes the welcome screen blank.
+                String scheme = uri.getScheme();
+                if ("http".equalsIgnoreCase(scheme) || "https".equalsIgnoreCase(scheme)) {
+                    return !PAGE.equals(uri.toString());
+                }
+                return false; // about:blank, about:srcdoc, blob: and data: are browser-managed.
             }
             @Override
             public void onReceivedError(WebView view, WebResourceRequest request,
