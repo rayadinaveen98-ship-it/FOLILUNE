@@ -64,6 +64,8 @@ public class ReaderDurabilityTest {
                 waitFor("window.FOLILUNE_G1?.version==='g1'", 15));
         assertEquals("true", eval("!![...document.querySelectorAll('link[href]')].find(x=>x.getAttribute('href')==='./vnext-integrated.css')"));
         assertEquals("true", eval("!!document.querySelector('#vnWelcome')"));
+        assertTrue("Modern Atelier Moon/Book illustration did not replace older Home art",
+                waitFor("document.querySelector('.hero-art svg')?.getAttribute('aria-label')?.includes('open book')===true", 15));
         if ("true".equals(eval("window.FOLILUNE_G1.isWelcomeOpen()"))) {
             // Simulate an actual reader skipping onboarding. This must never reset library data.
             assertEquals("true", eval("(()=>{document.querySelector('#vnSkip').click();"
