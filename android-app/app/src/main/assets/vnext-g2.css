@@ -1,4 +1,6 @@
 /* FOLILUNE G2-A: live content surfaces, no EPUB page/engine styling overrides. */
+/* More real destinations require a scrollable rail on tablet landscape. */
+.sidebar{overflow-y:auto;overscroll-behavior:contain}
 .g2-content{max-width:1420px;margin:0 auto;padding-bottom:72px}
 .g2-heading{margin-bottom:30px;display:flex;justify-content:space-between;align-items:end;gap:20px}
 .g2-heading .page-title{font-weight:400;line-height:1.11;margin:.25em 0}
