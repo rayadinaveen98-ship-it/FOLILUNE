@@ -7,11 +7,11 @@ android {
     compileSdk 35
 
     defaultConfig {
-        applicationId 'com.folilune.tablet'
+        applicationId 'com.folilune.vnextreader'
         minSdk 26
         targetSdk 34
-        versionCode 12
-        versionName '0.12.0-tablet-test'
+        versionCode 13
+        versionName '0.13.0-g1-integration-test'
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
 
