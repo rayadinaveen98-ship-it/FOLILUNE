@@ -60,6 +60,16 @@ public class ReaderDurabilityTest {
                 waitFor("document.readyState==='complete' && !!document.querySelector('#screen') && document.body.innerText.includes('FOLILUNE')", 30));
         assertEquals("true", eval("location.origin==='https://appassets.androidplatform.net'"));
         assertEquals("true", eval("typeof window.ePub==='function' && typeof window.JSZip==='function'"));
+        assertTrue("vNext integrated visual JS failed to load",
+                waitFor("window.FOLILUNE_G1?.version==='g1'", 15));
+        assertEquals("true", eval("!!document.querySelector('link[href$=vnext-integrated.css]')"));
+        assertEquals("true", eval("!!document.querySelector('#vnWelcome')"));
+        if ("true".equals(eval("window.FOLILUNE_G1.isWelcomeOpen()"))) {
+            // Simulate an actual reader skipping onboarding. This must never reset library data.
+            assertEquals("true", eval("(()=>{document.querySelector('#vnSkip').click();"
+                    + "return window.FOLILUNE_G1.isWelcomeOpen()===false})()"));
+        }
+
     }
 
     private static String quoted(String text) {
