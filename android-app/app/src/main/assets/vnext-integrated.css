@@ -79,10 +79,17 @@ select:focus-visible{outline:3px solid var(--v-brass);outline-offset:3px}
  .topbar h1{font-size:16px;max-width:38vw;overflow:hidden;text-overflow:ellipsis}
  .topbar-breadcrumb{display:none}
  .vn-control{min-width:44px;min-height:44px}
- .hero{display:flex;flex-direction:column;min-height:initial}
- .hero-copy{padding:28px 25px 14px}
- .hero-art{min-height:190px;max-height:220px}
- .hero-art svg{min-height:190px}
+ .topbar-right>button[data-action="help"],.topbar-right>.top-avatar{display:none}
+ .topbar-left{gap:9px}
+ .topbar h1{max-width:39vw}
+ .hero{display:flex;flex-direction:column;min-height:initial;overflow:hidden}
+ .hero-copy{width:100%;padding:29px 26px 12px;position:relative;z-index:1}
+ .hero-copy h2{font-size:clamp(29px,8vw,39px);max-width:380px}
+ .hero-copy p{max-width:380px}
+ .hero-art{position:relative;inset:auto;right:auto;top:auto;
+   width:100%;height:210px;min-height:210px;max-height:240px;opacity:1;justify-content:center}
+ .hero-art svg{width:100%;height:100%;min-height:210px;object-fit:cover}
+ .hero-progress{bottom:13px;right:13px}
  .reading-grid{gap:11px}
  .section-title h2{font-size:21px}
  .reader-head{padding:7px 12px}
