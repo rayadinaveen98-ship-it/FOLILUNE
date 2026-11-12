@@ -56,9 +56,19 @@
     const t=document.getElementById('vnThemeToggle');
     if(t)t.setAttribute('aria-label',prefs.theme==='night'?'Switch to paper theme':'Switch to night theme');
   };
-  // The three EPUB.js engine functions and all book storage keys remain unchanged.
-  // Reassign only an existing decorative art function, never a reader function.
-  try{if(typeof heroArt==='function')heroArt=bookArt}catch(e){}
+  // No reader or book-storage functions are replaced. Update only Home's
+  // decorative SVG after the original v12 renderer creates each Home screen.
+  const bookHost=document.getElementById('screen');
+  const decorateHome=()=>{
+    const host=bookHost?.querySelector('.hero-art');
+    if(!host || host.dataset.vnArt==='moon-book')return;
+    host.dataset.vnArt='moon-book';
+    host.innerHTML=bookArt();
+  };
+  if(bookHost){
+    new MutationObserver(decorateHome).observe(bookHost,{childList:true});
+    decorateHome();
+  }
   const mark=document.querySelector('.brand-mark');
   if(mark){mark.textContent='';mark.insertAdjacentHTML('beforeend',logo());}
   document.querySelectorAll('.nav-btn[data-view] .nav-ico').forEach(el=>{
@@ -171,8 +181,7 @@
     }
   });
   applyTheme();
-  // Re-render once to use the new decorative hero art; the real EPUB engine is untouched.
-  if(typeof render==='function'&&typeof state!=='undefined'&&state.view==='home')render();
+  // Existing v12 render() and all EPUB.js lifecycle calls are left intact.
   if(!prefs.seen)openWelcome();
   window.FOLILUNE_G1={version:'g1',engine:'v12-unmodified',showWelcome:openWelcome,
     isWelcomeOpen:()=>!welcome.hidden};
