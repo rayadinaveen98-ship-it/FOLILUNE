@@ -181,7 +181,12 @@
     }
   });
   applyTheme();
-  // Existing v12 render() and all EPUB.js lifecycle calls are left intact.
+  // Replace the original no-JavaScript fallback immediately with the real Home shell.
+  // loadImports() will render again once genuine IndexedDB books are available.
+  // On startup the original v12 state is always 'home', so no EPUB runtime is active.
+  if(typeof render==='function'&&typeof state!=='undefined'&&state.view==='home'){
+    render();
+  }
   if(!prefs.seen)openWelcome();
   window.FOLILUNE_G1={version:'g1',engine:'v12-unmodified',showWelcome:openWelcome,
     isWelcomeOpen:()=>!welcome.hidden};
