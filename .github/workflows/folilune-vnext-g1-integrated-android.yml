@@ -39,6 +39,15 @@ jobs:
           yes | "$SDKMANAGER" --sdk_root="$ANDROID_HOME" --licenses >/dev/null || true
           "$SDKMANAGER" --sdk_root="$ANDROID_HOME" --install 'platforms;android-35' 'build-tools;35.0.0'
 
+      - name: Static-check additive visual JavaScript and unchanged engine boundaries
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check android-app/app/src/main/assets/vnext-integrated.js
+          grep -q 'vnext-integrated.css' android-app/app/src/main/assets/index.html
+          grep -q 'vnext-integrated.js' android-app/app/src/main/assets/index.html
+          grep -q "folilune_local_library_v3" android-app/app/src/main/assets/index.html
+
       - name: Build Android debug and instrumentation packages
         shell: bash
         run: |
