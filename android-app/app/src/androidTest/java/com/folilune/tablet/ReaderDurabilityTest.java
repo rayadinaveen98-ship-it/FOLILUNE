@@ -62,7 +62,7 @@ public class ReaderDurabilityTest {
         assertEquals("true", eval("typeof window.ePub==='function' && typeof window.JSZip==='function'"));
         assertTrue("vNext integrated visual JS failed to load",
                 waitFor("window.FOLILUNE_G1?.version==='g1'", 15));
-        assertEquals("true", eval("!!document.querySelector('link[href$=vnext-integrated.css]')"));
+        assertEquals("true", eval("!![...document.querySelectorAll('link[href]')].find(x=>x.getAttribute('href')==='./vnext-integrated.css')"));
         assertEquals("true", eval("!!document.querySelector('#vnWelcome')"));
         if ("true".equals(eval("window.FOLILUNE_G1.isWelcomeOpen()"))) {
             // Simulate an actual reader skipping onboarding. This must never reset library data.
