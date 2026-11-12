@@ -101,6 +101,7 @@
 @media (max-width:720px){.reader-head .reader-flag{font-size:9px}.epub-reader-pages{min-height:260px}.epub-stage-label{font-size:13px}}
 </style>
 <link rel="stylesheet" href="./vnext-integrated.css" />
+<link rel="stylesheet" href="./vnext-g2.css" />
 </head>
 <body>
 <div class="app" id="app">
@@ -411,7 +412,7 @@ async function importFile(file){try{const ext=file.name.split('.').pop()?.toLowe
 async function removeImported(id){const b=books.find(x=>x.id===id);if(!b?.imported||!confirm('Remove "'+b.title+'" from this browser? Its reading position will also be cleared.'))return;try{await storeRemove(id);importedDocs.delete(id);books.splice(books.findIndex(x=>x.id===id),1);delete state.readingPositions?.[id];delete state.bookmarksByBook?.[id];state.notes=state.notes.filter(n=>n.bookId!==id);state.highlights=state.highlights.filter(n=>n.bookId!==id);if(state.book===id)state.book='atlas';save();render();toast('Local book removed')}catch(err){toast('Unable to remove book: '+err.message)}}
 
 const views={home,library,story,comic,study};
-function render(opt={}){const main=$('#screen');if(epubRuntime)storeEpubCheckpoint(epubRuntime);disposeEpubRuntime();if(!views[state.view])state.view='home';const prior=$('#readerPages');if(prior&&state.view==='story'&&prior.dataset.bookId===state.book&&Number(prior.dataset.chapter)===state.storyChapter)checkpointReader();main.innerHTML=views[state.view]();const titles={home:'Your Reading Space',library:'Your Library',story:'Story Reader',comic:'Comic Reader',study:'Study Workspace'};$('#topTitle').textContent=titles[state.view];$('#topSub').textContent=state.view==='home'?'/ Modern Atelier':'/ Integrated Reader v12';document.querySelectorAll('.nav-btn[data-view]').forEach(el=>el.classList.toggle('active',el.dataset.view===state.view));$('#sidebar').classList.remove('open');$('#curtain').classList.remove('show');$('#globalSearch').value=state.view==='library'?state.search:'';hideSelection();if(!opt.keepScroll)$('#mainScroll').scrollTop=0;if(state.view==='story'&&useFullEpub()){mountEpubRuntime();}if(state.view==='story'&&!useFullEpub()){const reader=$('#readerPages');if(reader){const rec=state.readingPositions?.[state.book];if(rec?.chapter===state.storyChapter){restoreReaderLocation(reader,rec);const pending=[...reader.querySelectorAll('.reader-figure img')].filter(img=>!img.complete);if(pending.length)Promise.allSettled(pending.map(img=>img.decode())).then(()=>{if(reader.isConnected&&state.view==='story'&&reader.dataset.bookId===state.book&&Number(reader.dataset.chapter)===state.storyChapter)restoreReaderLocation(reader,rec)})}}}save()}
+function render(opt={}){const main=$('#screen');if(epubRuntime)storeEpubCheckpoint(epubRuntime);disposeEpubRuntime();if(!views[state.view])state.view='home';const prior=$('#readerPages');if(prior&&state.view==='story'&&prior.dataset.bookId===state.book&&Number(prior.dataset.chapter)===state.storyChapter)checkpointReader();main.innerHTML=views[state.view]();const titles={home:'Your Reading Space',library:'Your Library',story:'Story Reader',comic:'Comic Reader',study:'Study Workspace'};$('#topTitle').textContent=window.FOLILUNE_EXTRA_TITLES?.[state.view]||titles[state.view]||'FOLILUNE';$('#topSub').textContent=state.view==='home'?'/ Modern Atelier':'/ Integrated Reader v12';document.querySelectorAll('.nav-btn[data-view]').forEach(el=>el.classList.toggle('active',el.dataset.view===state.view));$('#sidebar').classList.remove('open');$('#curtain').classList.remove('show');$('#globalSearch').value=state.view==='library'?state.search:'';hideSelection();if(!opt.keepScroll)$('#mainScroll').scrollTop=0;if(state.view==='story'&&useFullEpub()){mountEpubRuntime();}if(state.view==='story'&&!useFullEpub()){const reader=$('#readerPages');if(reader){const rec=state.readingPositions?.[state.book];if(rec?.chapter===state.storyChapter){restoreReaderLocation(reader,rec);const pending=[...reader.querySelectorAll('.reader-figure img')].filter(img=>!img.complete);if(pending.length)Promise.allSettled(pending.map(img=>img.decode())).then(()=>{if(reader.isConnected&&state.view==='story'&&reader.dataset.bookId===state.book&&Number(reader.dataset.chapter)===state.storyChapter)restoreReaderLocation(reader,rec)})}}}save()}
 function navigate(v){checkpointReader();state.view=v;if(v==='story'&&!currentBook()){state.book='atlas'}if(v==='story'){const loc=state.readingPositions?.[state.book];state.storyChapter=loc?.chapter||0}state.toolPanel='none';state.focus=false;render()}
 function openBook(id){const b=books.find(b=>b.id===id);if(!b)return;if(!b.imported&&!['atlas','lantern','light'].includes(id)){toast('Library showcase title — choose Atlas, Lantern or Shape of Light to test a reader.');return}checkpointReader();state.book=id;state.lastOpened ||= {};state.lastOpened[id]=Date.now();navigate(b.open);toast(b.imported?`Opened local book: ${b.title}`:`Opened sample: ${b.title}`)}
 function hideSelection(){$('#selectionTools').classList.add('hidden')}
@@ -477,6 +478,59 @@ function navigateEpubHref(href){const rt=epubRuntime;if(!rt){toast('Book is stil
 function toggleEpubBookmark(){const rt=epubRuntime;const cfi=rt?.rendition?.currentLocation()?.start?.cfi;if(typeof cfi!=='string'||!cfi.startsWith('epubcfi(')){toast('Book is still loading…');return}state.epubBookmarks ||= {};const arr=state.epubBookmarks[rt.bookId]||[];state.epubBookmarks[rt.bookId]=arr.includes(cfi)?arr.filter(x=>x!==cfi):[...arr,cfi].slice(-80);save();updateEpubTools();toast(arr.includes(cfi)?'Saved place removed':'Page bookmarked')}
 function switchEpubMode(mode){const doc=importedDocs.get(state.book);if(!doc)return;if(mode==='full'&&!hasFullEpub(doc)){toast('Reimport the original EPUB to enable full reading');$('#importBookInput').click();return}checkpointReader();state.epubModes ||= {};state.epubModes[state.book]=mode;state.toolPanel='none';if(mode==='preview')state.storyChapter=Math.max(0,Math.min(currentChapters().length-1,state.readingPositions?.[state.book]?.chapter||0));render();toast(mode==='full'?'Using full EPUB beta reader':'Using the simplified text preview')}
 
+
+ // vNext G2: controlled real-reader state/view boundary.
+ // Keep the private EPUB engine and IndexedDB implementation untouched.
+ const g2Allowed=new Set(['home','library','search','saved','settings']);
+ window.FOLILUNE_EXTRA_TITLES=Object.create(null);
+ window.FOLILUNE_REAL_UI=Object.freeze({
+   version:'g2-bridge-1',
+   snapshot:()=>{
+     const textBookmarks={atlas:Array.isArray(state.bookmarks)?state.bookmarks.filter(Number.isInteger):[]};
+     for(const [id,marks] of Object.entries(state.bookmarksByBook||{}))
+       if(Array.isArray(marks))textBookmarks[id]=marks.filter(Number.isInteger).slice(0,100);
+     const epubBookmarks={};
+     for(const [id,marks] of Object.entries(state.epubBookmarks||{}))
+       if(Array.isArray(marks))epubBookmarks[id]=marks.filter(x=>typeof x==='string'&&x.startsWith('epubcfi(')&&x.length<=1800).slice(0,80);
+     return {view:state.view,fontSize:state.fontSize,readerTone:state.readerTone,
+       lineHeight:state.lineHeight,textBookmarks,epubBookmarks,
+       books:books.map(b=>({id:b.id,title:b.title,author:b.author,type:b.type,format:b.format||'',
+         cover:b.cover,imported:!!b.imported,progress:Math.max(0,Math.min(100,Number(b.progress)||0)),
+         lastOpened:Number(state.lastOpened?.[b.id]||0)}))};
+   },
+   register:(name,builder,title)=>{
+     if(!g2Allowed.has(name)||typeof builder!=='function')return false;
+     views[name]=()=>{try{return String(builder())}catch(error){
+       console.error('G2 screen failed',name,error);
+       return '<div class="content"><h1>Unable to open this page</h1><button class="secondary" data-view="library">Go to library</button></div>';
+     }};
+     window.FOLILUNE_EXTRA_TITLES[name]=String(title||name).slice(0,80);
+     return true;
+   },
+   navigate:name=>{if(views[name])navigate(name)},
+   openSaved:loc=>{
+     if(!loc||!books.some(b=>b.id===loc.bookId))return false;
+     checkpointReader();state.readingPositions ||= {};
+     const old=state.readingPositions[loc.bookId]||{};
+     if(loc.kind==='epub'&&typeof loc.cfi==='string'&&loc.cfi.startsWith('epubcfi(')&&loc.cfi.length<=1800
+       &&state.epubBookmarks?.[loc.bookId]?.includes(loc.cfi))
+       state.readingPositions[loc.bookId]={...old,cfi:loc.cfi};
+     else if(loc.kind==='chapter'&&Number.isInteger(loc.chapter)&&loc.chapter>=0&&loc.chapter<=10000)
+       state.readingPositions[loc.bookId]={...old,chapter:loc.chapter,ratio:0};
+     else return false;
+     save();openBook(loc.bookId);return true;
+   },
+   updateReading:(key,value)=>{
+     if(key==='fontSize')state.fontSize=Math.max(16,Math.min(26,Math.round(Number(value)||19)));
+     else if(key==='readerTone'&&['paper','sepia','night'].includes(value))state.readerTone=value;
+     else if(key==='lineHeight')state.lineHeight=Math.max(1.2,Math.min(2.5,Number(value)||1.85));
+     else return false;
+     save();
+     if(state.view==='story'){if(useFullEpub())applyEpubAppearance();else render({keepScroll:true})}
+     return true;
+   }
+ });
+
 loadImports().finally(()=>render());
 })();
 </script>
@@ -536,5 +590,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -->
 <script src="./vnext-integrated.js"></script>
+<script src="./vnext-g2.js"></script>
 </body>
 </html>
