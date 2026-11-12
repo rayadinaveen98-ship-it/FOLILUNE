@@ -75,7 +75,20 @@ public class ReaderDurabilityTest {
             assertEquals("true", eval("(()=>{document.querySelector('#vnSkip').click();"
                     + "return window.FOLILUNE_G1.isWelcomeOpen()===false})()"));
         }
-
+        // G2 screens must be connected to actual reader state rather than a
+        // separate catalog of fictional demo tiles.
+        assertTrue("G2 connected surfaces not initialized",
+                waitFor("window.FOLILUNE_G2?.version==='g2a'", 15));
+        assertEquals("true", eval("window.FOLILUNE_REAL_UI?.snapshot().books.length>=7"));
+        assertEquals("true", eval("(()=>{document.querySelector('.nav-btn[data-view=search]').click();"
+                + "return !!document.querySelector('#g2Search')"
+                + "&& document.querySelector('#topTitle').textContent==='Search'})()"));
+        assertEquals("true", eval("(()=>{document.querySelector('.nav-btn[data-view=saved]').click();"
+                + "return document.querySelector('#topTitle').textContent==='Saved Places'})()"));
+        assertEquals("true", eval("(()=>{document.querySelector('.nav-btn[data-view=settings]').click();"
+                + "return !!document.querySelector('.g2-settings')})()"));
+        assertEquals("true", eval("(()=>{document.querySelector('.nav-btn[data-view=home]').click();"
+                + "return !!document.querySelector('.g2-hero')})()"));
     }
 
     private static String quoted(String text) {
