@@ -93,18 +93,6 @@ jobs:
           emulator-options: -no-window -no-audio -gpu swiftshader_indirect -no-snapshot -no-boot-anim
           script: bash android-app/scripts/run-emulator-qa.sh
 
-      - name: Capture clean launch visual screenshot
-        if: success()
-        shell: bash
-        run: |
-          set -euo pipefail
-          mkdir -p android-app/qa-logs
-          adb shell am force-stop com.folilune.vnextreader
-          adb shell am start -W -n com.folilune.vnextreader/com.folilune.tablet.MainActivity
-          sleep 7
-          adb shell screencap -p /sdcard/Download/folilune-g1-home.png
-          adb pull /sdcard/Download/folilune-g1-home.png android-app/qa-logs/folilune-g1-home.png
-
       - name: Upload integration test evidence
         if: always()
         uses: actions/upload-artifact@v4
