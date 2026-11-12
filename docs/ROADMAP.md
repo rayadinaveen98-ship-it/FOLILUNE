@@ -73,3 +73,15 @@ The debug APK in draft [PR #3](https://github.com/rayadinaveen98-ship-it/FOLILUN
 
 ## Physical tablet validation and data portability decision — 2026-11-11
 **Owner decision:** prioritize distributing the latest v12 test APK and validating physical Android tablet behavior. Defer in-app backup/export/restore engineering until Google account connectivity is designed. This is a deliberate scope deferral, **not** a passed backup gate and not authorization to delete or overwrite existing local data. Google sign-in/Gmail connection alone does not back up EPUB files; a separately permissioned secure cloud storage/sync implementation (for example, explicitly authorized Google Drive access), retention rules, conflict handling and privacy/security testing will be required. Until then, local app uninstall, storage clearing and debug signing-key changes can lose imported books, notes and bookmarks. Physical tablet QA covers import, genuine rendering, exact CFI/bookmark persistence after force-close, portrait/landscape, and launch stability. This closes a prototype validation milestone if passed, **not** the entire product roadmap or release certification.
+
+## vNext Stage G1 — First real-reader visual integration (2026-11-12)
+**Android TEST APK validated in emulator, NOT final release.** New separate installable package `com.folilune.vnextreader` combines the original v12 real EPUB.js/JSZip engine with an additive Modern Atelier Elevated presentation, original Folded Moon-inspired artwork, skippable intro and Paper/Night app chrome. The v12 renderer and keys remain unchanged. Native picker, local EPUB import, CFI checkpoint, bookmark and process-death recovery continue to be tested.
+
+- Integrated CI [run 43255745631](https://github.com/rayadinaveen98-ship-it/FOLILUNE/actions/runs/43255745631): success, 2/2 EPUB instrumented tests, screen screenshot visually inspected, signed APK artifact.
+- Independent [run 43255745365](https://github.com/rayadinaveen98-ship-it/FOLILUNE/actions/runs/43255745365): success, same 2/2 durability gates.
+- [G1 engineering QA, SHA256 and unresolved risks](VNEXT_G1_REAL_READER_INTEGRATION_2026-11-12.md).
+- **Do not treat as final vNext:** Stage G2 must migrate actual Home/Library/supporting screens, not use the Phase E demo as fake real functionality; Stage G3 adds explicitly approved real features.
+- **Protection:** G1 has distinct Android package/private data. Existing `com.folilune.tablet` v12 imported books are NOT automatically available. Never uninstall v12 to test G1. Genuine migration/signing/update behavior remains open.
+- Earlier exploratory runs had an intermittent exact CFI mismatch despite subsequent passing runs; repeat stress tests and physical tablet QA before declaring reading continuity stable.
+
+**Next gate:** physical tablet UX validation of G1 followed by visual parity G2, data migration and multi-device stability. Account/sync and backup remain separate user-authorized scope.

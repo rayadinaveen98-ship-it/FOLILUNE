@@ -40,13 +40,13 @@ public final class MainActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().setStatusBarColor(Color.rgb(244, 238, 229));
-        getWindow().setNavigationBarColor(Color.rgb(244, 238, 229));
+        getWindow().setStatusBarColor(Color.rgb(245, 242, 234));
+        getWindow().setNavigationBarColor(Color.rgb(245, 242, 234));
         getWindow().getDecorView().setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR | View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);
 
         reader = new WebView(this);
-        reader.setBackgroundColor(Color.rgb(244, 238, 229));
+        reader.setBackgroundColor(Color.rgb(245, 242, 234));
         setContentView(reader);
 
         WebSettings settings = reader.getSettings();
@@ -63,7 +63,7 @@ public final class MainActivity extends Activity {
         settings.setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW);
         settings.setDefaultTextEncodingName("UTF-8");
         // Marker prevents the HTML from incorrectly declaring a blob: backup download successful.
-        settings.setUserAgentString(settings.getUserAgentString() + " FOLILUNE-Android-Test/12");
+        settings.setUserAgentString(settings.getUserAgentString() + " FOLILUNE-Android-G1/13");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             settings.setSafeBrowsingEnabled(true);
         }
@@ -87,6 +87,30 @@ public final class MainActivity extends Activity {
                         return response;
                     } catch (IOException e) {
                         Log.e(TAG, "Bundled page not found", e);
+                    }
+                }
+                // Additional first-party vNext presentation files. Fixed allowlist only;
+                // all book URLs and unrelated network requests are still denied.
+                if ("https".equalsIgnoreCase(scheme)
+                        && HOST.equalsIgnoreCase(uri.getHost())) {
+                    String assetName = null;
+                    String mime = null;
+                    if ("/assets/vnext-integrated.css".equals(uri.getPath())) {
+                        assetName = "vnext-integrated.css";
+                        mime = "text/css";
+                    } else if ("/assets/vnext-integrated.js".equals(uri.getPath())) {
+                        assetName = "vnext-integrated.js";
+                        mime = "application/javascript";
+                    }
+                    if (assetName != null) {
+                        try {
+                            InputStream stream = getAssets().open(assetName);
+                            WebResourceResponse response = new WebResourceResponse(mime, "UTF-8", stream);
+                            response.setResponseHeaders(Collections.singletonMap("Cache-Control", "no-store"));
+                            return response;
+                        } catch (IOException e) {
+                            Log.e(TAG, "vNext presentation asset missing: " + assetName, e);
+                        }
                     }
                 }
                 // All remote HTTP(S) requests are blocked in this prototype.

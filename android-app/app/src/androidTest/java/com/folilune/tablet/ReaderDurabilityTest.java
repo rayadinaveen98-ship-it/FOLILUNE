@@ -60,6 +60,22 @@ public class ReaderDurabilityTest {
                 waitFor("document.readyState==='complete' && !!document.querySelector('#screen') && document.body.innerText.includes('FOLILUNE')", 30));
         assertEquals("true", eval("location.origin==='https://appassets.androidplatform.net'"));
         assertEquals("true", eval("typeof window.ePub==='function' && typeof window.JSZip==='function'"));
+        assertTrue("vNext integrated visual JS failed to load",
+                waitFor("window.FOLILUNE_G1?.version==='g1'", 15));
+        assertEquals("true", eval("!![...document.querySelectorAll('link[href]')].find(x=>x.getAttribute('href')==='./vnext-integrated.css')"));
+        assertEquals("true", eval("!!document.querySelector('#vnWelcome')"));
+        assertTrue("Live Home failed to replace the old no-JavaScript fallback",
+                waitFor("!!document.querySelector('#screen > .content .hero')"
+                        + " && !document.querySelector('.fallback-top')", 15));
+
+        assertTrue("Modern Atelier Moon/Book illustration did not replace older Home art",
+                waitFor("document.querySelector('.hero-art svg')?.getAttribute('aria-label')?.includes('open book')===true", 15));
+        if ("true".equals(eval("window.FOLILUNE_G1.isWelcomeOpen()"))) {
+            // Simulate an actual reader skipping onboarding. This must never reset library data.
+            assertEquals("true", eval("(()=>{document.querySelector('#vnSkip').click();"
+                    + "return window.FOLILUNE_G1.isWelcomeOpen()===false})()"));
+        }
+
     }
 
     private static String quoted(String text) {
@@ -168,9 +184,20 @@ public class ReaderDurabilityTest {
                 waitFor("!!document.querySelector('#epubStage iframe') && document.body.innerText.includes('FOLILUNE Tablet QA')", 45));
 
         // Validate the actual EPUB.js rendition location, not just a saved value in localStorage.
-        assertTrue("Real EPUB.js did not restore the precise saved CFI after process death",
-                waitFor(LOCATION + "?.cfi===localStorage.getItem('folilune_android_qa_cfi')"
-                        + " && " + LOCATION + "?.index===1", 30));
+        boolean exactCfiRestored = waitFor(
+                LOCATION + "?.cfi===localStorage.getItem('folilune_android_qa_cfi')"
+                        + " && " + LOCATION + "?.index===1", 30);
+        if (!exactCfiRestored) {
+            String info = eval("(()=>{const r=window.__foliluneQaRendition;"
+                    + "const st=" + STATE + ";return JSON.stringify({"
+                    + "expected:localStorage.getItem('folilune_android_qa_cfi'),"
+                    + "actual:r?.currentLocation()?.start?.cfi,"
+                    + "index:r?.currentLocation()?.start?.index,"
+                    + "savedState:st.readingPositions?.[st.book]?.cfi,"
+                    + "restoring:typeof epubRuntime==='undefined'?null:epubRuntime?.restoring,"
+                    + "currentBook:st.book,engine:!!document.querySelector('#epubStage iframe')})})()");
+            fail("Exact EPUB CFI restoration mismatch: " + info);
+        }
 
         assertEquals("true", eval("(()=>{const st=" + STATE
                 + ";const id=localStorage.getItem('folilune_android_qa_id');"

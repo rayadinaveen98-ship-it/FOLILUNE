@@ -1,0 +1,113 @@
+name: FOLILUNE vNext G1 Integrated Real-Reader APK
+on:
+  pull_request:
+    paths:
+      - 'android-app/**'
+      - '.github/workflows/folilune-vnext-g1-integrated-android.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  integrated-android-apk-and-cfi:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 50
+    steps:
+      - name: Checkout integration branch
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+
+      - name: Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Gradle 8.10.2
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.10.2'
+
+      - name: Install required SDK
+        shell: bash
+        run: |
+          set -euo pipefail
+          SDKMANAGER=$(find "$ANDROID_HOME/cmdline-tools" -path '*/bin/sdkmanager' -type f | sort -V | tail -1)
+          test -n "$SDKMANAGER"
+          yes | "$SDKMANAGER" --sdk_root="$ANDROID_HOME" --licenses >/dev/null || true
+          "$SDKMANAGER" --sdk_root="$ANDROID_HOME" --install 'platforms;android-35' 'build-tools;35.0.0'
+
+      - name: Static-check additive visual JavaScript and unchanged engine boundaries
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check android-app/app/src/main/assets/vnext-integrated.js
+          grep -q 'vnext-integrated.css' android-app/app/src/main/assets/index.html
+          grep -q 'vnext-integrated.js' android-app/app/src/main/assets/index.html
+          grep -q "folilune_local_library_v3" android-app/app/src/main/assets/index.html
+
+      - name: Build Android debug and instrumentation packages
+        shell: bash
+        run: |
+          set -euo pipefail
+          gradle -p android-app --no-daemon assembleDebug assembleDebugAndroidTest
+
+      - name: Inspect signed integrated real-EPUB build
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK=android-app/app/build/outputs/apk/debug/app-debug.apk
+          test -s "$APK"
+          for name in index.html vnext-integrated.css vnext-integrated.js; do
+            unzip -l "$APK" | grep -q "assets/$name"
+          done
+          unzip -p "$APK" assets/index.html | grep -q 'folilune-epubjs'
+          unzip -p "$APK" assets/index.html | grep -q 'folilune_atelier_v1'
+          unzip -p "$APK" assets/vnext-integrated.js | grep -q 'FOLILUNE_G1'
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose "$APK"
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | tee /tmp/folilune-g1-badging.txt
+          grep -q "package: name='com.folilune.vnextreader'" /tmp/folilune-g1-badging.txt
+          sha256sum "$APK" > android-app/app/build/outputs/apk/debug/app-debug.apk.sha256
+
+      - name: Publish integrated debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: FOLILUNE-vNext-G1-Real-EPUB-APK
+          path: |
+            android-app/app/build/outputs/apk/debug/app-debug.apk
+            android-app/app/build/outputs/apk/debug/app-debug.apk.sha256
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Enable Android emulator KVM
+        shell: bash
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Verify actual EPUB import, CFI and branded first launch on Android
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          target: default
+          arch: x86_64
+          profile: pixel_6
+          cores: 2
+          ram-size: 2048M
+          disk-size: 4096M
+          disable-animations: true
+          emulator-options: -no-window -no-audio -gpu swiftshader_indirect -no-snapshot -no-boot-anim
+          script: bash android-app/scripts/run-emulator-qa.sh
+
+      - name: Upload integration test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: FOLILUNE-vNext-G1-Android-QA
+          path: |
+            android-app/qa-logs/
+          if-no-files-found: ignore
+          retention-days: 14
