@@ -137,11 +137,9 @@
   };
   function closeWelcome(applyComfort){
     if(applyComfort){
-      // This is the EXISTING reader preference; do not reset other state fields.
-      if(typeof state!=='undefined'&&state && typeof save==='function'){
-        state.fontSize=Math.max(16,Math.min(26,prefs.readerSize));
-        save();
-      }
+      // Reader state is private inside the original v12 IIFE. Use the G2
+      // bounded preference bridge instead of silently failing to save comfort.
+      window.FOLILUNE_REAL_UI?.updateReading('fontSize',prefs.readerSize);
     }
     welcome.hidden=true;
     welcome.setAttribute('aria-hidden','true');
@@ -181,12 +179,8 @@
     }
   });
   applyTheme();
-  // Replace the original no-JavaScript fallback immediately with the real Home shell.
-  // loadImports() will render again once genuine IndexedDB books are available.
-  // On startup the original v12 state is always 'home', so no EPUB runtime is active.
-  if(typeof render==='function'&&typeof state!=='undefined'&&state.view==='home'){
-    render();
-  }
+  // Real Home initialization is owned by the original loadImports() path.
+  // Never call private reader functions from the presentation script.
   if(!prefs.seen)openWelcome();
   window.FOLILUNE_G1={version:'g1',engine:'v12-unmodified',showWelcome:openWelcome,
     isWelcomeOpen:()=>!welcome.hidden};

@@ -75,7 +75,25 @@ public class ReaderDurabilityTest {
             assertEquals("true", eval("(()=>{document.querySelector('#vnSkip').click();"
                     + "return window.FOLILUNE_G1.isWelcomeOpen()===false})()"));
         }
-
+        // G2 screens must be connected to actual reader state rather than a
+        // separate catalog of fictional demo tiles.
+        assertTrue("G2 connected surfaces not initialized",
+                waitFor("window.FOLILUNE_G2?.version==='g2a'", 15));
+        assertEquals("true", eval("window.FOLILUNE_REAL_UI?.snapshot().books.length>=7"));
+        assertEquals("true", eval("(()=>{document.querySelector('.nav-btn[data-view=search]').click();"
+                + "return !!document.querySelector('#g2Search')"
+                + "&& document.querySelector('#topTitle').textContent==='Search'})()"));
+        assertEquals("true", eval("(()=>{document.querySelector('.nav-btn[data-view=saved]').click();"
+                + "return document.querySelector('#topTitle').textContent==='Saved Places'})()"));
+        assertEquals("true", eval("(()=>{document.querySelector('.nav-btn[data-view=settings]').click();"
+                + "return !!document.querySelector('.g2-settings')})()"));
+        assertEquals("true", eval("(()=>{document.querySelector('.nav-btn[data-view=home]').click();"
+                + "return !!document.querySelector('.g2-hero')})()"));
+        assertTrue("G2 supporting surfaces did not load",waitFor("window.FOLILUNE_G2_SUPPORT?.version==='g2b'",15));
+        assertEquals("true",eval("(()=>{document.querySelector('.nav-btn[data-view=collections]').click();return !!document.querySelector('.g2b-collection-grid')})()"));
+        assertEquals("true",eval("(()=>{document.querySelector('.nav-btn[data-view=notes]').click();return !!document.querySelector('#g2bNotesResults')})()"));
+        assertEquals("true",eval("(()=>{document.querySelector('.nav-btn[data-view=help]').click();return document.querySelectorAll('.g2b-faq').length>=7})()"));
+        assertEquals("true",eval("(()=>{document.querySelector('.nav-btn[data-view=home]').click();return !!document.querySelector('.g2-hero')})()"));
     }
 
     private static String quoted(String text) {
@@ -94,6 +112,14 @@ public class ReaderDurabilityTest {
             "JSON.parse(localStorage.getItem('folilune_atelier_v1')||'{}')";
     private static final String LOCATION =
             "window.__foliluneQaRendition?.currentLocation()?.start";
+    // Verify against the actual bookmark saved before process death.
+    // The separate test-only localStorage key sometimes is not flushed to disk
+    // before Android force-stop, despite the real reader state being durable.
+    private static final String EXPECTED_BOOKMARK =
+            "(()=>{const st=" + STATE + ";const marks=st.epubBookmarks?.[st.book];"
+            + "return Array.isArray(marks)&&marks.length===1"
+            + "&&typeof marks[0]==='string'&&marks[0].startsWith('epubcfi(')"
+            + "?marks[0]:null})()";
 
     @Test
     public void seedImportedEpub() throws Exception {
@@ -164,6 +190,23 @@ public class ReaderDurabilityTest {
                 eval("(()=>{const state=" + STATE + ";const id=state.book;"
                         + "return state.epubBookmarks?.[id]?.includes("
                         + "localStorage.getItem('folilune_android_qa_cfi'))===true})()"));
+        eval("window.__foliluneJournalCommitted=false;(()=>{"
+                + "const check=()=>{const rq=indexedDB.open('folilune_local_library_v3');"
+                + "rq.onsuccess=()=>{const db=rq.result;"
+                + "const tx=db.transaction('books','readonly');"
+                + "const q=tx.objectStore('books').get('__folilune_reading_state_checkpoint_v1__');"
+                + "q.onsuccess=()=>{const st=" + STATE + ";const saved=q.result?.appState;"
+                + "window.__foliluneJournalCommitted=!!saved?.epubBookmarks?.[st.book]"
+                + "?.includes(localStorage.getItem('folilune_android_qa_cfi'))"
+                + "&&saved.readingPositions?.[st.book]?.cfi"
+                + "===localStorage.getItem('folilune_android_qa_cfi')};"
+                + "tx.oncomplete=()=>{db.close();if(!window.__foliluneJournalCommitted)setTimeout(check,120)};"
+                + "};rq.onerror=()=>setTimeout(check,180)};check()})();true");
+        // Bookmarks must be committed in IndexedDB before intentionally killing
+        // the app. This tests a real transaction, not only a synchronous
+        // localStorage value that may not have reached device flash.
+        assertTrue("EPUB bookmark journal did not commit to IndexedDB",
+                waitFor("window.__foliluneJournalCommitted===true", 20));
         // Verify that real IndexedDB has saved the imported publication, not just a memory map.
         eval("window.__foliluneDbStored=false;(()=>{const rq=indexedDB.open('folilune_local_library_v3');rq.onsuccess=()=>{const db=rq.result;const tx=db.transaction('books','readonly');const q=tx.objectStore('books').getAll();q.onsuccess=()=>{window.__foliluneDbStored=q.result.some(x=>x.title==='FOLILUNE Tablet QA')};tx.oncomplete=()=>db.close()};rq.onerror=()=>window.__foliluneDbStored='error'})();true");
         assertTrue("Imported EPUB was not written to actual IndexedDB",
@@ -183,14 +226,26 @@ public class ReaderDurabilityTest {
         assertTrue("Reopened EPUB did not load in the actual browser renderer",
                 waitFor("!!document.querySelector('#epubStage iframe') && document.body.innerText.includes('FOLILUNE Tablet QA')", 45));
 
-        // Validate the actual EPUB.js rendition location, not just a saved value in localStorage.
+        // Validate the actual EPUB.js rendition against the EPUB bookmark saved
+        // during Stage 1. Do not rely on a separate test-only key surviving
+        // a force-stop; that key has proven intermittently nondurable.
+        assertEquals("true", eval("(()=>{const st=" + STATE
+                + ";return Number.isInteger(st.durableRevision)&&st.durableRevision>=1})()"));
+        assertEquals("Saved EPUB bookmark missing after restart: " +
+                eval("(()=>{const st=" + STATE + ";return JSON.stringify({"
+                    + "book:st.book,marks:st.epubBookmarks?.[st.book],"
+                    + "revision:st.durableRevision,"
+                    + "expectedMarker:localStorage.getItem('folilune_android_qa_cfi'),"
+                    + "location:st.readingPositions?.[st.book]?.cfi})})()"),
+                "true",eval(EXPECTED_BOOKMARK + "?.startsWith('epubcfi(')===true"));
         boolean exactCfiRestored = waitFor(
-                LOCATION + "?.cfi===localStorage.getItem('folilune_android_qa_cfi')"
+                LOCATION + "?.cfi===" + EXPECTED_BOOKMARK
                         + " && " + LOCATION + "?.index===1", 30);
         if (!exactCfiRestored) {
             String info = eval("(()=>{const r=window.__foliluneQaRendition;"
                     + "const st=" + STATE + ";return JSON.stringify({"
-                    + "expected:localStorage.getItem('folilune_android_qa_cfi'),"
+                    + "expected:" + EXPECTED_BOOKMARK + ","
+                    + "qaMarker:localStorage.getItem('folilune_android_qa_cfi'),"
                     + "actual:r?.currentLocation()?.start?.cfi,"
                     + "index:r?.currentLocation()?.start?.index,"
                     + "savedState:st.readingPositions?.[st.book]?.cfi,"
@@ -200,11 +255,10 @@ public class ReaderDurabilityTest {
         }
 
         assertEquals("true", eval("(()=>{const st=" + STATE
-                + ";const id=localStorage.getItem('folilune_android_qa_id');"
-                + "return st.book===id && st.readingPositions?.[id]?.cfi==="
-                + "localStorage.getItem('folilune_android_qa_cfi')"
-                + " && st.epubBookmarks?.[id]?.includes("
-                + "localStorage.getItem('folilune_android_qa_cfi'))===true})()"));
+                + ";const id=st.book;const expected=" + EXPECTED_BOOKMARK + ";"
+                + "return typeof expected==='string'"
+                + " && st.readingPositions?.[id]?.cfi===expected"
+                + " && st.epubBookmarks?.[id]?.includes(expected)===true})()"));
 
         // Reader preferences may reflow the document, but must not delete the saved bookmark.
         eval("document.querySelector('[data-panel=settings]').click();true");

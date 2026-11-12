@@ -101,6 +101,8 @@
 @media (max-width:720px){.reader-head .reader-flag{font-size:9px}.epub-reader-pages{min-height:260px}.epub-stage-label{font-size:13px}}
 </style>
 <link rel="stylesheet" href="./vnext-integrated.css" />
+<link rel="stylesheet" href="./vnext-g2.css" />
+<link rel="stylesheet" href="./vnext-g2-support.css" />
 </head>
 <body>
 <div class="app" id="app">
@@ -166,6 +168,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 (function(){'use strict';
 const KEY='folilune_atelier_v1'; // Keep v2 preferences and sample annotations.
 const DB_NAME='folilune_local_library_v3';
+const DURABLE_STATE_ROW='__folilune_reading_state_checkpoint_v1__';
 const initial={view:'home',book:'atlas',storyChapter:0,comicPage:0,comicMode:'page',direction:'ltr',zoom:100,studyTab:'notes',toolPanel:'none',readerTone:'paper',fontSize:19,lineHeight:1.85,bookmarks:[],highlights:[],notes:[],studyDraft:'',filter:'All',search:'',focus:false,bookmarksByBook:{},readingPositions:{}};
 let state={...initial};try{const saved=JSON.parse(localStorage.getItem(KEY)||'null');if(saved&&typeof saved==='object')state={...initial,...saved,view:'home',toolPanel:'none',focus:false};}catch(e){}
 const books=[
@@ -207,7 +210,40 @@ const studyParas=[
 'The lesson extends beyond art. The same patience can deepen reading, study, conversation, and the way we inhabit a day.'
 ];
 const $=x=>document.querySelector(x),esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const save=()=>{try{localStorage.setItem(KEY,JSON.stringify({...state,view:'home',toolPanel:'none'}));}catch(e){}};
+// Android WebView localStorage can acknowledge setItem before its backing store
+// is flushed. Mirror the same app state in the existing *transactional*
+// IndexedDB library; an explicit bookmark waits for that transaction to commit.
+// Never treat this state row as a book (loadImports filters by chapters).
+let durableReady=false,durableRevision=Math.max(0,Number(state.durableRevision)||0);
+let durableTimer=null,durableQueue=Promise.resolve();
+const snapshotState=()=>({...state,view:'home',toolPanel:'none',focus:false});
+function durableWrite(){
+  if(!durableReady)return Promise.resolve(false);
+  if(durableTimer!==null){clearTimeout(durableTimer);durableTimer=null}
+  const snapshot=JSON.parse(JSON.stringify(snapshotState()));
+  const revision=Number(snapshot.durableRevision)||0;
+  // Serialize to avoid an old snapshot overwriting a newer bookmark.
+  const writing=durableQueue.catch(()=>{}).then(()=>storePut({
+    id:DURABLE_STATE_ROW,revision,appState:snapshot,
+    storedAt:new Date().toISOString()
+  }));
+  durableQueue=writing;
+  return writing.then(()=>true).catch(err=>{
+    console.warn('Durable reading checkpoint unavailable:',err);
+    return false;
+  });
+}
+function durableSchedule(){
+  if(!durableReady)return;
+  if(durableTimer!==null)clearTimeout(durableTimer);
+  durableTimer=setTimeout(()=>{durableTimer=null;durableWrite()},350);
+}
+const save=()=>{
+  state.durableRevision=++durableRevision;
+  try{localStorage.setItem(KEY,JSON.stringify(snapshotState()))}
+  catch(err){console.warn('Reader local preference storage unavailable:',err)}
+  durableSchedule();
+};
 let toastTimer;function toast(t){const el=$('#toast');el.textContent=t;el.classList.add('visible');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('visible'),2500)};
 function cover(b,cl='cover'){return `<div class="${cl} ${b.cover}"><span class="cover-emblem">${b.emblem}</span><span class="cover-name">${esc(b.title)}</span><span class="cover-author">${esc(b.author)}</span></div>`}
 function heroArt(){return `<svg aria-hidden="true" viewBox="0 0 620 300" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#e4d1ab"/><stop offset=".5" stop-color="#c8d4c3"/><stop offset="1" stop-color="#789087"/></linearGradient><linearGradient id="rock" x1="0" x2="1"><stop stop-color="#82968d"/><stop offset="1" stop-color="#526b62"/></linearGradient></defs><rect width="620" height="300" fill="url(#sky)"/><circle cx="367" cy="78" r="60" fill="#ffebbd" opacity=".85"/><circle cx="367" cy="78" r="76" fill="none" stroke="#f8ead1" opacity=".6"/><path d="M0 238Q90 162 174 221Q230 170 295 220Q403 135 497 213Q550 186 620 225V300H0Z" fill="#8da299" opacity=".55"/><path d="M0 260Q82 215 177 246Q252 189 343 242Q438 188 521 233Q585 215 620 242V300H0Z" fill="#718c83"/><path d="M165 270L230 156L286 270H260L230 202L191 270" fill="url(#rock)"/><path d="M234 170L293 270H282L234 197L187 270H176Z" fill="#4d655d"/><path d="M211 197V176Q211 147 234 147Q257 147 257 176V197M221 194V176Q221 163 234 163Q247 163 247 176V194" stroke="#455c55" stroke-width="8" fill="none"/><path d="M99 272L151 199L203 272H181L151 224L123 272Z" fill="#6b7f74"/><path d="M398 275L471 190L544 275" fill="none" stroke="#536c61" stroke-width="15"/><path d="M413 257V203M529 257V203M390 275H561" stroke="#5b7368" stroke-width="12"/><path d="M434 232Q470 201 501 232" stroke="#536b62" stroke-width="10" fill="none"/><path d="M0 280Q102 258 190 291Q293 258 405 289Q514 260 620 280V300H0Z" fill="#405b54"/><g fill="#fff8df" opacity=".8"><circle cx="83" cy="89" r="2"/><circle cx="209" cy="51" r="1"/><circle cx="527" cy="72" r="2"/></g></svg>`}
@@ -258,7 +294,21 @@ function storeOpen(){return new Promise((resolve,reject)=>{if(!('indexedDB' in w
 async function storeAll(){const db=await storeOpen();return new Promise((resolve,reject)=>{const tx=db.transaction('books','readonly'),req=tx.objectStore('books').getAll();req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error);tx.oncomplete=()=>db.close();tx.onerror=()=>reject(tx.error)})}
 async function storePut(doc){const db=await storeOpen();return new Promise((resolve,reject)=>{const tx=db.transaction('books','readwrite');tx.objectStore('books').put(doc);tx.oncomplete=()=>{db.close();resolve()};tx.onerror=()=>reject(tx.error)})}
 async function storeRemove(id){const db=await storeOpen();return new Promise((resolve,reject)=>{const tx=db.transaction('books','readwrite');tx.objectStore('books').delete(id);tx.oncomplete=()=>{db.close();resolve()};tx.onerror=()=>reject(tx.error)})}
-async function loadImports(){try{const saved=await storeAll();for(const doc of saved){if(!doc?.id||!Array.isArray(doc.chapters))continue;importedDocs.set(doc.id,doc);books.unshift({id:doc.id,title:doc.title,author:doc.author,type:'Novels',format:hasFullEpub(doc)?'EPUB · full reader beta':doc.format,cover:'sage',emblem:'✦',progress:Math.round(((state.readingPositions?.[doc.id]?.chapter||0)/(doc.chapters.length||1))*100),subtitle:'Locally imported book',open:'story',imported:true})}}catch(err){console.warn('FOLILUNE local library unavailable:',err.message);toast('Local library may be unavailable in this browser')}}
+async function loadImports(){try{const saved=await storeAll();
+  const journal=saved.find(doc=>doc?.id===DURABLE_STATE_ROW);
+  if(journal?.appState&&typeof journal.appState==='object'&&!Array.isArray(journal.appState)
+    &&Number.isSafeInteger(journal.revision)&&journal.revision>durableRevision
+    &&journal.revision<=Number.MAX_SAFE_INTEGER){
+    // A committed IndexedDB checkpoint is newer than WebView localStorage.
+    // Restore *before* rendering/using the imported-book list.
+    state={...initial,...journal.appState,view:'home',toolPanel:'none',focus:false};
+    durableRevision=journal.revision;
+    try{localStorage.setItem(KEY,JSON.stringify(snapshotState()))}
+    catch(e){console.warn('Could not refresh local reader cache:',e)}
+  }
+  for(const doc of saved){if(!doc?.id||!Array.isArray(doc.chapters))continue;importedDocs.set(doc.id,doc);books.unshift({id:doc.id,title:doc.title,author:doc.author,type:'Novels',format:hasFullEpub(doc)?'EPUB · full reader beta':doc.format,cover:'sage',emblem:'✦',progress:Math.round(((state.readingPositions?.[doc.id]?.chapter||0)/(doc.chapters.length||1))*100),subtitle:'Locally imported book',open:'story',imported:true})}
+  durableReady=true;
+}catch(err){console.warn('FOLILUNE local library unavailable:',err.message);toast('Local library may be unavailable in this browser')}}
 function normalizeEntry(name){if(!name||name.startsWith('/')||name.includes('\\')||name.split('/').includes('..'))throw new Error('Unsafe file path in EPUB');return name}
 function resolveEpubPath(base,relative){const p=new URL(relative,'https://folilune.local/'+base).pathname.slice(1);return decodeURIComponent(p)}
 async function openZip(arrayBuffer){const data=new Uint8Array(arrayBuffer),v=new DataView(arrayBuffer),len=data.length;let eocd=-1;for(let i=len-22;i>=Math.max(0,len-65558);i--){if(v.getUint32(i,true)===0x06054b50){eocd=i;break}}if(eocd<0)throw new Error('Not a supported EPUB ZIP archive');const count=v.getUint16(eocd+10,true),offset=v.getUint32(eocd+16,true);if(!count||count>1200||offset>=len)throw new Error('EPUB archive is too large or unsupported');let pos=offset,uncompressedTotal=0;const entries=new Map(),decoder=new TextDecoder('utf-8');for(let n=0;n<count;n++){if(pos+46>len||v.getUint32(pos,true)!==0x02014b50)throw new Error('Damaged EPUB archive');const flags=v.getUint16(pos+8,true),method=v.getUint16(pos+10,true),csize=v.getUint32(pos+20,true),usize=v.getUint32(pos+24,true),nameLength=v.getUint16(pos+28,true),extra=v.getUint16(pos+30,true),comment=v.getUint16(pos+32,true),localOff=v.getUint32(pos+42,true);if(flags&1)throw new Error('Encrypted/DRM-protected files are unsupported');if(usize===0xffffffff||csize===0xffffffff||!([0,8].includes(method)))throw new Error('Unsupported EPUB compression');if(usize>12e6||csize>25e6||usize>Math.max(1,csize)*400)throw new Error('EPUB archive entry exceeds safety limit');uncompressedTotal+=usize;if(uncompressedTotal>65e6)throw new Error('EPUB archive exceeds safety limit');const name=normalizeEntry(decoder.decode(data.slice(pos+46,pos+46+nameLength)));if(!name.endsWith('/'))entries.set(name,{method,csize,usize,localOff});pos+=46+nameLength+extra+comment;if(pos>len)throw new Error('Corrupted EPUB index')}
@@ -411,7 +461,7 @@ async function importFile(file){try{const ext=file.name.split('.').pop()?.toLowe
 async function removeImported(id){const b=books.find(x=>x.id===id);if(!b?.imported||!confirm('Remove "'+b.title+'" from this browser? Its reading position will also be cleared.'))return;try{await storeRemove(id);importedDocs.delete(id);books.splice(books.findIndex(x=>x.id===id),1);delete state.readingPositions?.[id];delete state.bookmarksByBook?.[id];state.notes=state.notes.filter(n=>n.bookId!==id);state.highlights=state.highlights.filter(n=>n.bookId!==id);if(state.book===id)state.book='atlas';save();render();toast('Local book removed')}catch(err){toast('Unable to remove book: '+err.message)}}
 
 const views={home,library,story,comic,study};
-function render(opt={}){const main=$('#screen');if(epubRuntime)storeEpubCheckpoint(epubRuntime);disposeEpubRuntime();if(!views[state.view])state.view='home';const prior=$('#readerPages');if(prior&&state.view==='story'&&prior.dataset.bookId===state.book&&Number(prior.dataset.chapter)===state.storyChapter)checkpointReader();main.innerHTML=views[state.view]();const titles={home:'Your Reading Space',library:'Your Library',story:'Story Reader',comic:'Comic Reader',study:'Study Workspace'};$('#topTitle').textContent=titles[state.view];$('#topSub').textContent=state.view==='home'?'/ Modern Atelier':'/ Integrated Reader v12';document.querySelectorAll('.nav-btn[data-view]').forEach(el=>el.classList.toggle('active',el.dataset.view===state.view));$('#sidebar').classList.remove('open');$('#curtain').classList.remove('show');$('#globalSearch').value=state.view==='library'?state.search:'';hideSelection();if(!opt.keepScroll)$('#mainScroll').scrollTop=0;if(state.view==='story'&&useFullEpub()){mountEpubRuntime();}if(state.view==='story'&&!useFullEpub()){const reader=$('#readerPages');if(reader){const rec=state.readingPositions?.[state.book];if(rec?.chapter===state.storyChapter){restoreReaderLocation(reader,rec);const pending=[...reader.querySelectorAll('.reader-figure img')].filter(img=>!img.complete);if(pending.length)Promise.allSettled(pending.map(img=>img.decode())).then(()=>{if(reader.isConnected&&state.view==='story'&&reader.dataset.bookId===state.book&&Number(reader.dataset.chapter)===state.storyChapter)restoreReaderLocation(reader,rec)})}}}save()}
+function render(opt={}){const main=$('#screen');if(epubRuntime)storeEpubCheckpoint(epubRuntime);disposeEpubRuntime();if(!views[state.view])state.view='home';const prior=$('#readerPages');if(prior&&state.view==='story'&&prior.dataset.bookId===state.book&&Number(prior.dataset.chapter)===state.storyChapter)checkpointReader();main.innerHTML=views[state.view]();const titles={home:'Your Reading Space',library:'Your Library',story:'Story Reader',comic:'Comic Reader',study:'Study Workspace'};$('#topTitle').textContent=window.FOLILUNE_EXTRA_TITLES?.[state.view]||titles[state.view]||'FOLILUNE';$('#topSub').textContent=state.view==='home'?'/ Modern Atelier':'/ Integrated Reader v12';document.querySelectorAll('.nav-btn[data-view]').forEach(el=>el.classList.toggle('active',el.dataset.view===state.view));$('#sidebar').classList.remove('open');$('#curtain').classList.remove('show');$('#globalSearch').value=state.view==='library'?state.search:'';hideSelection();if(!opt.keepScroll)$('#mainScroll').scrollTop=0;if(state.view==='story'&&useFullEpub()){mountEpubRuntime();}if(state.view==='story'&&!useFullEpub()){const reader=$('#readerPages');if(reader){const rec=state.readingPositions?.[state.book];if(rec?.chapter===state.storyChapter){restoreReaderLocation(reader,rec);const pending=[...reader.querySelectorAll('.reader-figure img')].filter(img=>!img.complete);if(pending.length)Promise.allSettled(pending.map(img=>img.decode())).then(()=>{if(reader.isConnected&&state.view==='story'&&reader.dataset.bookId===state.book&&Number(reader.dataset.chapter)===state.storyChapter)restoreReaderLocation(reader,rec)})}}}save()}
 function navigate(v){checkpointReader();state.view=v;if(v==='story'&&!currentBook()){state.book='atlas'}if(v==='story'){const loc=state.readingPositions?.[state.book];state.storyChapter=loc?.chapter||0}state.toolPanel='none';state.focus=false;render()}
 function openBook(id){const b=books.find(b=>b.id===id);if(!b)return;if(!b.imported&&!['atlas','lantern','light'].includes(id)){toast('Library showcase title — choose Atlas, Lantern or Shape of Light to test a reader.');return}checkpointReader();state.book=id;state.lastOpened ||= {};state.lastOpened[id]=Date.now();navigate(b.open);toast(b.imported?`Opened local book: ${b.title}`:`Opened sample: ${b.title}`)}
 function hideSelection(){$('#selectionTools').classList.add('hidden')}
@@ -449,7 +499,7 @@ case'note-selection':saveSelected('note');break;
 case'copy-selection':{const t=selectedText;try{navigator.clipboard.writeText(t).then(()=>toast('Selection copied')).catch(()=>toast('Clipboard unavailable in this browser'))}catch(e){toast('Clipboard unavailable in this browser')}hideSelection();break}
 }}
 document.addEventListener('click',e=>{const el=e.target.closest('[data-view],[data-book],[data-filter],[data-chapter],[data-panel],[data-tone],[data-comic-mode],[data-study-tab],[data-action],[data-epub-href],[data-epub-cfi]');if(!el)return;e.preventDefault();if(el.dataset.view){navigate(el.dataset.view);return}if(el.dataset.book){openBook(el.dataset.book);return}if(el.dataset.filter){state.filter=el.dataset.filter;state.view='library';state.search='';render();return}if(el.dataset.epubHref!==undefined){navigateEpubHref(el.dataset.epubHref);return}if(el.dataset.epubCfi!==undefined){navigateEpubHref(el.dataset.epubCfi);return}if(el.dataset.chapter!==undefined){state.storyChapter=Math.max(0,Math.min(currentChapters().length-1,Number(el.dataset.chapter)));setProgress(0);render();return}if(el.dataset.panel){state.toolPanel=el.dataset.panel===state.toolPanel?'none':el.dataset.panel;if(useFullEpub()){updateEpubTools();save()}else render({keepScroll:true});return}if(el.dataset.tone){state.readerTone=el.dataset.tone;if(useFullEpub()){applyEpubAppearance();updateEpubTools();save()}else render({keepScroll:true});return}if(el.dataset.comicMode){state.comicMode=el.dataset.comicMode;render({keepScroll:true});return}if(el.dataset.studyTab){state.studyTab=el.dataset.studyTab;render({keepScroll:true});return}if(el.dataset.action){action(el.dataset.action,el);return}});
-document.addEventListener('input',e=>{if(e.target.dataset.input==='lineHeight'){state.lineHeight=Number(e.target.value);if(useFullEpub()){applyEpubAppearance();save();return}const pg=$('#storyPage');if(pg)pg.style.setProperty('--read-line',state.lineHeight);const span=e.target.previousElementSibling?.querySelector('span');if(span)span.textContent=state.lineHeight.toFixed(2);save();}if(e.target.id==='globalSearch'){state.search=e.target.value;state.filter='All';state.view='library';const focusPos=state.search.length;render({keepScroll:true});const input=$('#globalSearch');input.focus();input.setSelectionRange(focusPos,focusPos);}});
+document.addEventListener('input',e=>{if(e.target.dataset.input==='lineHeight'){state.lineHeight=Number(e.target.value);if(useFullEpub()){applyEpubAppearance();save();return}const pg=$('#storyPage');if(pg)pg.style.setProperty('--read-line',state.lineHeight);const span=e.target.previousElementSibling?.querySelector('span');if(span)span.textContent=state.lineHeight.toFixed(2);save();}if(e.target.id==='globalSearch'){const q=e.target.value;if(window.FOLILUNE_G2?.setQuery){window.FOLILUNE_G2.setQuery(q);state.view='search';render({keepScroll:true});const input=$('#globalSearch');input.value=q;input.focus();input.setSelectionRange(q.length,q.length);}else{state.search=q;state.filter='All';state.view='library';const focusPos=state.search.length;render({keepScroll:true});const input=$('#globalSearch');input.focus();input.setSelectionRange(focusPos,focusPos);}}});
 $('#importBookInput').addEventListener('change',async e=>{const file=e.target.files?.[0];e.target.value='';if(file)await importFile(file)});
 $('#backupFileInput').addEventListener('change',async e=>{const file=e.target.files?.[0];e.target.value='';if(file)await restoreLibraryBackup(file)});
 document.addEventListener('scroll',e=>{if(e.target?.id==='readerPages'){const pos=getReaderLocation(e.target);if(pos)updateProgress(pos.ratio,pos.anchor)}},true);
@@ -474,8 +524,88 @@ function disposeEpubRuntime(){epubMountSeq++;const rt=epubRuntime;epubRuntime=nu
 async function mountEpubRuntime(){const generation=++epubMountSeq,bookId=state.book,doc=importedDocs.get(bookId),stage=$('#epubStage');if(!stage||!hasFullEpub(doc))return;let localBook=null,localRendition=null;try{const buffer=await doc.originalEpub.arrayBuffer();if(generation!==epubMountSeq||!stage.isConnected)return;localBook=window.ePub(buffer,{replacements:'base64'});await localBook.ready;if(generation!==epubMountSeq||!stage.isConnected){localBook.destroy();return}const navigation=await localBook.loaded.navigation;const toc=Array.isArray(navigation?.toc)?navigation.toc:[];const names=[];const walk=items=>{for(const n of items||[]){if(names.length>=150)return;names.push({label:String(n.label||'Section').trim().slice(0,140),href:String(n.href||'').slice(0,900)});walk(n.subitems)}};walk(toc);stage.innerHTML='';localRendition=localBook.renderTo(stage,{width:'100%',height:'100%',spread:'none',flow:'paginated',allowScriptedContent:false});epubRuntime={bookId,book:localBook,rendition:localRendition,toc:names,spineLength:localBook.spine?.length||doc.chapters.length,restoring:true};const rt=epubRuntime;for(const [name,bg,fg] of [['paper','#f6f2e9','#363e32'],['sepia','#eadfc8','#4e4638'],['night','#282d2d','#e8e5da']])rt.rendition.themes.register('folilune-'+name,{'body':{'background-color':bg,'color':fg,'font-family':'Georgia, serif'},'p':{'line-height':String(state.lineHeight)}});rt.rendition.on('relocated',()=>{if(epubRuntime===rt&&!rt.restoring)storeEpubCheckpoint(rt)});rt.rendition.on('rendered',()=>{if(epubRuntime===rt){$('#epubPages')?.setAttribute('data-engine','epubjs-real');$('#epubLoading')?.remove();}});applyEpubAppearance();const old=state.readingPositions?.[bookId];const target=old?.cfi?.startsWith('epubcfi(')?old.cfi:undefined;try{const display=localRendition.display(target);await Promise.race([display,new Promise(resolve=>setTimeout(resolve,6500))])}catch(e){console.warn('Saved CFI not valid for this publication; showing beginning',e);try{await Promise.race([localRendition.display(),new Promise(resolve=>setTimeout(resolve,4500))])}catch(err){throw err}}if(generation!==epubMountSeq)return;rt.restoring=false;storeEpubCheckpoint(rt);if(state.toolPanel==='contents')updateEpubTools();const pg=$('#epubPages');pg?.setAttribute('data-engine','epubjs-real');}catch(err){console.error('FOLILUNE real EPUB render failed',err);try{localRendition?.destroy()}catch(e){}try{localBook?.destroy()}catch(e){}if(generation!==epubMountSeq)return;epubRuntime=null;const node=$('#epubStage');if(node){node.innerHTML=`<div class="epub-live-error"><h3>This EPUB could not open in the full reader.</h3><p>${esc(err?.message||'Unknown EPUB error')}</p><button data-action="epub-preview">Continue in text preview</button></div>`}toast('Full EPUB renderer unavailable; text preview is available')}}
 function moveEpubPage(delta){const rt=epubRuntime;if(!rt){toast('Book is still opening…');return}Promise.resolve(delta>0?rt.rendition.next():rt.rendition.prev()).then(()=>{if(epubRuntime===rt)storeEpubCheckpoint(rt)}).catch(err=>{console.warn('EPUB page navigation failed',err);toast('Unable to turn this page')})}
 function navigateEpubHref(href){const rt=epubRuntime;if(!rt){toast('Book is still opening…');return}rt.rendition.display(href).then(()=>{if(epubRuntime===rt){storeEpubCheckpoint(rt);state.toolPanel='none';updateEpubTools();save()}}).catch(err=>{console.warn('Could not navigate EPUB',err);toast('Could not open this location')})}
-function toggleEpubBookmark(){const rt=epubRuntime;const cfi=rt?.rendition?.currentLocation()?.start?.cfi;if(typeof cfi!=='string'||!cfi.startsWith('epubcfi(')){toast('Book is still loading…');return}state.epubBookmarks ||= {};const arr=state.epubBookmarks[rt.bookId]||[];state.epubBookmarks[rt.bookId]=arr.includes(cfi)?arr.filter(x=>x!==cfi):[...arr,cfi].slice(-80);save();updateEpubTools();toast(arr.includes(cfi)?'Saved place removed':'Page bookmarked')}
+function toggleEpubBookmark(){const rt=epubRuntime;const cfi=rt?.rendition?.currentLocation()?.start?.cfi;if(typeof cfi!=='string'||!cfi.startsWith('epubcfi(')){toast('Book is still loading…');return}
+  state.epubBookmarks ||= {};const arr=state.epubBookmarks[rt.bookId]||[];
+  const removing=arr.includes(cfi);
+  state.epubBookmarks[rt.bookId]=removing?arr.filter(x=>x!==cfi):[...arr,cfi].slice(-80);
+  // The saved place and current page must share one committed snapshot.
+  storeEpubCheckpoint(rt);save();updateEpubTools();
+  durableWrite().then(persisted=>toast(persisted?(removing?'Saved place removed':'Page bookmarked'):'Bookmark saved in this session; durable storage unavailable'));
+}
 function switchEpubMode(mode){const doc=importedDocs.get(state.book);if(!doc)return;if(mode==='full'&&!hasFullEpub(doc)){toast('Reimport the original EPUB to enable full reading');$('#importBookInput').click();return}checkpointReader();state.epubModes ||= {};state.epubModes[state.book]=mode;state.toolPanel='none';if(mode==='preview')state.storyChapter=Math.max(0,Math.min(currentChapters().length-1,state.readingPositions?.[state.book]?.chapter||0));render();toast(mode==='full'?'Using full EPUB beta reader':'Using the simplified text preview')}
+
+
+ // vNext G2: controlled real-reader state/view boundary.
+ // Keep the private EPUB engine and IndexedDB implementation untouched.
+ const g2Allowed=new Set(['home','library','search','saved','settings','collections','notes','help']);
+ window.FOLILUNE_EXTRA_TITLES=Object.create(null);
+ window.FOLILUNE_REAL_UI=Object.freeze({
+   version:'g2-bridge-1',
+   snapshot:()=>{
+     const textBookmarks={atlas:Array.isArray(state.bookmarks)?state.bookmarks.filter(Number.isInteger):[]};
+     for(const [id,marks] of Object.entries(state.bookmarksByBook||{}))
+       if(Array.isArray(marks))textBookmarks[id]=marks.filter(Number.isInteger).slice(0,100);
+     const epubBookmarks={};
+     for(const [id,marks] of Object.entries(state.epubBookmarks||{}))
+       if(Array.isArray(marks))epubBookmarks[id]=marks.filter(x=>typeof x==='string'&&x.startsWith('epubcfi(')&&x.length<=1800).slice(0,80);
+     return {view:state.view,fontSize:state.fontSize,readerTone:state.readerTone,
+       lineHeight:state.lineHeight,textBookmarks,epubBookmarks,
+       notes:Array.isArray(state.notes)?state.notes.slice(0,350).map((n,i)=>({
+         index:i,quote:String(n?.quote||'').slice(0,450),text:String(n?.text||'').slice(0,1000),
+         bookId:String(n?.bookId||'').slice(0,160),chapter:Number.isInteger(n?.chapter)?n.chapter:null,
+         source:String(n?.source||'').slice(0,50),at:String(n?.at||'').slice(0,45)
+       })):[],
+       highlights:Array.isArray(state.highlights)?state.highlights.slice(0,350).map((n,i)=>({
+         index:i,quote:String(n?.quote||'').slice(0,450),text:String(n?.text||'').slice(0,1000),
+         bookId:String(n?.bookId||'').slice(0,160),chapter:Number.isInteger(n?.chapter)?n.chapter:null,
+         source:String(n?.source||'').slice(0,50),at:String(n?.at||'').slice(0,45)
+       })):[],
+       books:books.map(b=>({id:b.id,title:b.title,author:b.author,type:b.type,format:b.format||'',
+         cover:b.cover,imported:!!b.imported,progress:Math.max(0,Math.min(100,Number(b.progress)||0)),
+         lastOpened:Number(state.lastOpened?.[b.id]||0)}))};
+   },
+   register:(name,builder,title)=>{
+     if(!g2Allowed.has(name)||typeof builder!=='function')return false;
+     views[name]=()=>{try{return String(builder())}catch(error){
+       console.error('G2 screen failed',name,error);
+       return '<div class="content"><h1>Unable to open this page</h1><button class="secondary" data-view="library">Go to library</button></div>';
+     }};
+     window.FOLILUNE_EXTRA_TITLES[name]=String(title||name).slice(0,80);
+     return true;
+   },
+   navigate:name=>{if(views[name])navigate(name)},
+   openSaved:loc=>{
+     if(!loc||!books.some(b=>b.id===loc.bookId))return false;
+     checkpointReader();state.readingPositions ||= {};
+     const old=state.readingPositions[loc.bookId]||{};
+     if(loc.kind==='epub'&&typeof loc.cfi==='string'&&loc.cfi.startsWith('epubcfi(')&&loc.cfi.length<=1800
+       &&state.epubBookmarks?.[loc.bookId]?.includes(loc.cfi))
+       state.readingPositions[loc.bookId]={...old,cfi:loc.cfi};
+     else if(loc.kind==='chapter'&&Number.isInteger(loc.chapter)&&loc.chapter>=0&&loc.chapter<=10000)
+       state.readingPositions[loc.bookId]={...old,chapter:loc.chapter,ratio:0};
+     else return false;
+     save();openBook(loc.bookId);return true;
+   },
+   openAnnotation:(kind,index)=>{
+     const array=kind==='note'?state.notes:kind==='highlight'?state.highlights:null;
+     if(!Array.isArray(array)||!Number.isInteger(index)||index<0||index>=350)return false;
+     const entry=array[index];
+     if(!entry||typeof entry!=='object')return false;
+     const b=books.find(x=>x.id===entry.bookId);
+     if(b){openBook(b.id);return true}
+     if(entry.source==='study'){navigate('study');return true}
+     return false;
+   },
+   updateReading:(key,value)=>{
+     if(key==='fontSize')state.fontSize=Math.max(16,Math.min(26,Math.round(Number(value)||19)));
+     else if(key==='readerTone'&&['paper','sepia','night'].includes(value))state.readerTone=value;
+     else if(key==='lineHeight')state.lineHeight=Math.max(1.2,Math.min(2.5,Number(value)||1.85));
+     else return false;
+     save();
+     if(state.view==='story'){if(useFullEpub())applyEpubAppearance();else render({keepScroll:true})}
+     return true;
+   }
+ });
 
 loadImports().finally(()=>render());
 })();
@@ -536,5 +666,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -->
 <script src="./vnext-integrated.js"></script>
+<script src="./vnext-g2.js"></script>
+<script src="./vnext-g2-support.js"></script>
 </body>
 </html>
