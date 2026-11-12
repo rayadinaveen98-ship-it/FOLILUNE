@@ -107,6 +107,12 @@ public final class MainActivity extends Activity {
                     } else if ("/assets/vnext-g2.js".equals(uri.getPath())) {
                         assetName = "vnext-g2.js";
                         mime = "application/javascript";
+                    } else if ("/assets/vnext-g2-support.css".equals(uri.getPath())) {
+                        assetName = "vnext-g2-support.css";
+                        mime = "text/css";
+                    } else if ("/assets/vnext-g2-support.js".equals(uri.getPath())) {
+                        assetName = "vnext-g2-support.js";
+                        mime = "application/javascript";
                     }
                     if (assetName != null) {
                         try {

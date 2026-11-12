@@ -102,6 +102,7 @@
 </style>
 <link rel="stylesheet" href="./vnext-integrated.css" />
 <link rel="stylesheet" href="./vnext-g2.css" />
+<link rel="stylesheet" href="./vnext-g2-support.css" />
 </head>
 <body>
 <div class="app" id="app">
@@ -450,7 +451,7 @@ case'note-selection':saveSelected('note');break;
 case'copy-selection':{const t=selectedText;try{navigator.clipboard.writeText(t).then(()=>toast('Selection copied')).catch(()=>toast('Clipboard unavailable in this browser'))}catch(e){toast('Clipboard unavailable in this browser')}hideSelection();break}
 }}
 document.addEventListener('click',e=>{const el=e.target.closest('[data-view],[data-book],[data-filter],[data-chapter],[data-panel],[data-tone],[data-comic-mode],[data-study-tab],[data-action],[data-epub-href],[data-epub-cfi]');if(!el)return;e.preventDefault();if(el.dataset.view){navigate(el.dataset.view);return}if(el.dataset.book){openBook(el.dataset.book);return}if(el.dataset.filter){state.filter=el.dataset.filter;state.view='library';state.search='';render();return}if(el.dataset.epubHref!==undefined){navigateEpubHref(el.dataset.epubHref);return}if(el.dataset.epubCfi!==undefined){navigateEpubHref(el.dataset.epubCfi);return}if(el.dataset.chapter!==undefined){state.storyChapter=Math.max(0,Math.min(currentChapters().length-1,Number(el.dataset.chapter)));setProgress(0);render();return}if(el.dataset.panel){state.toolPanel=el.dataset.panel===state.toolPanel?'none':el.dataset.panel;if(useFullEpub()){updateEpubTools();save()}else render({keepScroll:true});return}if(el.dataset.tone){state.readerTone=el.dataset.tone;if(useFullEpub()){applyEpubAppearance();updateEpubTools();save()}else render({keepScroll:true});return}if(el.dataset.comicMode){state.comicMode=el.dataset.comicMode;render({keepScroll:true});return}if(el.dataset.studyTab){state.studyTab=el.dataset.studyTab;render({keepScroll:true});return}if(el.dataset.action){action(el.dataset.action,el);return}});
-document.addEventListener('input',e=>{if(e.target.dataset.input==='lineHeight'){state.lineHeight=Number(e.target.value);if(useFullEpub()){applyEpubAppearance();save();return}const pg=$('#storyPage');if(pg)pg.style.setProperty('--read-line',state.lineHeight);const span=e.target.previousElementSibling?.querySelector('span');if(span)span.textContent=state.lineHeight.toFixed(2);save();}if(e.target.id==='globalSearch'){state.search=e.target.value;state.filter='All';state.view='library';const focusPos=state.search.length;render({keepScroll:true});const input=$('#globalSearch');input.focus();input.setSelectionRange(focusPos,focusPos);}});
+document.addEventListener('input',e=>{if(e.target.dataset.input==='lineHeight'){state.lineHeight=Number(e.target.value);if(useFullEpub()){applyEpubAppearance();save();return}const pg=$('#storyPage');if(pg)pg.style.setProperty('--read-line',state.lineHeight);const span=e.target.previousElementSibling?.querySelector('span');if(span)span.textContent=state.lineHeight.toFixed(2);save();}if(e.target.id==='globalSearch'){const q=e.target.value;if(window.FOLILUNE_G2?.setQuery){window.FOLILUNE_G2.setQuery(q);state.view='search';render({keepScroll:true});const input=$('#globalSearch');input.value=q;input.focus();input.setSelectionRange(q.length,q.length);}else{state.search=q;state.filter='All';state.view='library';const focusPos=state.search.length;render({keepScroll:true});const input=$('#globalSearch');input.focus();input.setSelectionRange(focusPos,focusPos);}}});
 $('#importBookInput').addEventListener('change',async e=>{const file=e.target.files?.[0];e.target.value='';if(file)await importFile(file)});
 $('#backupFileInput').addEventListener('change',async e=>{const file=e.target.files?.[0];e.target.value='';if(file)await restoreLibraryBackup(file)});
 document.addEventListener('scroll',e=>{if(e.target?.id==='readerPages'){const pos=getReaderLocation(e.target);if(pos)updateProgress(pos.ratio,pos.anchor)}},true);
@@ -481,7 +482,7 @@ function switchEpubMode(mode){const doc=importedDocs.get(state.book);if(!doc)ret
 
  // vNext G2: controlled real-reader state/view boundary.
  // Keep the private EPUB engine and IndexedDB implementation untouched.
- const g2Allowed=new Set(['home','library','search','saved','settings']);
+ const g2Allowed=new Set(['home','library','search','saved','settings','collections','notes','help']);
  window.FOLILUNE_EXTRA_TITLES=Object.create(null);
  window.FOLILUNE_REAL_UI=Object.freeze({
    version:'g2-bridge-1',
@@ -494,6 +495,16 @@ function switchEpubMode(mode){const doc=importedDocs.get(state.book);if(!doc)ret
        if(Array.isArray(marks))epubBookmarks[id]=marks.filter(x=>typeof x==='string'&&x.startsWith('epubcfi(')&&x.length<=1800).slice(0,80);
      return {view:state.view,fontSize:state.fontSize,readerTone:state.readerTone,
        lineHeight:state.lineHeight,textBookmarks,epubBookmarks,
+       notes:Array.isArray(state.notes)?state.notes.slice(0,350).map((n,i)=>({
+         index:i,quote:String(n?.quote||'').slice(0,450),text:String(n?.text||'').slice(0,1000),
+         bookId:String(n?.bookId||'').slice(0,160),chapter:Number.isInteger(n?.chapter)?n.chapter:null,
+         source:String(n?.source||'').slice(0,50),at:String(n?.at||'').slice(0,45)
+       })):[],
+       highlights:Array.isArray(state.highlights)?state.highlights.slice(0,350).map((n,i)=>({
+         index:i,quote:String(n?.quote||'').slice(0,450),text:String(n?.text||'').slice(0,1000),
+         bookId:String(n?.bookId||'').slice(0,160),chapter:Number.isInteger(n?.chapter)?n.chapter:null,
+         source:String(n?.source||'').slice(0,50),at:String(n?.at||'').slice(0,45)
+       })):[],
        books:books.map(b=>({id:b.id,title:b.title,author:b.author,type:b.type,format:b.format||'',
          cover:b.cover,imported:!!b.imported,progress:Math.max(0,Math.min(100,Number(b.progress)||0)),
          lastOpened:Number(state.lastOpened?.[b.id]||0)}))};
@@ -519,6 +530,16 @@ function switchEpubMode(mode){const doc=importedDocs.get(state.book);if(!doc)ret
        state.readingPositions[loc.bookId]={...old,chapter:loc.chapter,ratio:0};
      else return false;
      save();openBook(loc.bookId);return true;
+   },
+   openAnnotation:(kind,index)=>{
+     const array=kind==='note'?state.notes:kind==='highlight'?state.highlights:null;
+     if(!Array.isArray(array)||!Number.isInteger(index)||index<0||index>=350)return false;
+     const entry=array[index];
+     if(!entry||typeof entry!=='object')return false;
+     const b=books.find(x=>x.id===entry.bookId);
+     if(b){openBook(b.id);return true}
+     if(entry.source==='study'){navigate('study');return true}
+     return false;
    },
    updateReading:(key,value)=>{
      if(key==='fontSize')state.fontSize=Math.max(16,Math.min(26,Math.round(Number(value)||19)));
@@ -591,5 +612,6 @@ THE SOFTWARE.
 -->
 <script src="./vnext-integrated.js"></script>
 <script src="./vnext-g2.js"></script>
+<script src="./vnext-g2-support.js"></script>
 </body>
 </html>

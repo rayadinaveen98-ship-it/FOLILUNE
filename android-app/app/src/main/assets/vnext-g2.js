@@ -121,7 +121,7 @@
     if(b.dataset.g2OpenSaved!==undefined){const x=savedEntries[Number(b.dataset.g2OpenSaved)];if(x)api.openSaved(x);return}
     if(b.dataset.g2Tone){api.updateReading('readerTone',b.dataset.g2Tone);api.navigate('settings');return}
     if(b.dataset.g2Size){const current=api.snapshot().fontSize;api.updateReading('fontSize',Math.min(26,Math.max(16,current+(b.dataset.g2Size==='up'?1:-1))));api.navigate('settings');return}
-    if(b.dataset.g2AppTheme){document.querySelector('#vnThemeToggle')?.click();api.navigate('settings');return}
+    if(b.dataset.g2AppTheme){if((b.dataset.g2AppTheme==='night')!==document.body.classList.contains('vn-night'))document.querySelector('#vnThemeToggle')?.click();api.navigate('settings');return}
   });
   document.addEventListener('input',e=>{
     if(e.target.id==='g2Search'){
@@ -140,5 +140,5 @@
   document.addEventListener('change',e=>{if(e.target.id==='g2Sort'){ui.sort=e.target.value==='title'?'title':'recent';api.navigate('library')}});
   // Existing v12 import and EPUB state continue to drive all rerenders.
   // Do not call render here: loadImports() owns first Home hydration.
-  window.FOLILUNE_G2=Object.freeze({version:'g2a',getSurface:()=>api.snapshot().view});
+  window.FOLILUNE_G2=Object.freeze({version:'g2a',getSurface:()=>api.snapshot().view,setQuery:q=>{ui.query=String(q||'').slice(0,180)}});
 })();

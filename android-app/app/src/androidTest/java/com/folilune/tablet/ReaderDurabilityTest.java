@@ -89,6 +89,11 @@ public class ReaderDurabilityTest {
                 + "return !!document.querySelector('.g2-settings')})()"));
         assertEquals("true", eval("(()=>{document.querySelector('.nav-btn[data-view=home]').click();"
                 + "return !!document.querySelector('.g2-hero')})()"));
+        assertTrue("G2 supporting surfaces did not load",waitFor("window.FOLILUNE_G2_SUPPORT?.version==='g2b'",15));
+        assertEquals("true",eval("(()=>{document.querySelector('.nav-btn[data-view=collections]').click();return !!document.querySelector('.g2b-collection-grid')})()"));
+        assertEquals("true",eval("(()=>{document.querySelector('.nav-btn[data-view=notes]').click();return !!document.querySelector('#g2bNotesResults')})()"));
+        assertEquals("true",eval("(()=>{document.querySelector('.nav-btn[data-view=help]').click();return document.querySelectorAll('.g2b-faq').length>=7})()"));
+        assertEquals("true",eval("(()=>{document.querySelector('.nav-btn[data-view=home]').click();return !!document.querySelector('.g2-hero')})()"));
     }
 
     private static String quoted(String text) {
