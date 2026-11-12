@@ -190,6 +190,23 @@ public class ReaderDurabilityTest {
                 eval("(()=>{const state=" + STATE + ";const id=state.book;"
                         + "return state.epubBookmarks?.[id]?.includes("
                         + "localStorage.getItem('folilune_android_qa_cfi'))===true})()"));
+        eval("window.__foliluneJournalCommitted=false;(()=>{"
+                + "const check=()=>{const rq=indexedDB.open('folilune_local_library_v3');"
+                + "rq.onsuccess=()=>{const db=rq.result;"
+                + "const tx=db.transaction('books','readonly');"
+                + "const q=tx.objectStore('books').get('__folilune_reading_state_checkpoint_v1__');"
+                + "q.onsuccess=()=>{const st=" + STATE + ";const saved=q.result?.appState;"
+                + "window.__foliluneJournalCommitted=!!saved?.epubBookmarks?.[st.book]"
+                + "?.includes(localStorage.getItem('folilune_android_qa_cfi'))"
+                + "&&saved.readingPositions?.[st.book]?.cfi"
+                + "===localStorage.getItem('folilune_android_qa_cfi')};"
+                + "tx.oncomplete=()=>{db.close();if(!window.__foliluneJournalCommitted)setTimeout(check,120)};"
+                + "};rq.onerror=()=>setTimeout(check,180)};check()})();true");
+        // Bookmarks must be committed in IndexedDB before intentionally killing
+        // the app. This tests a real transaction, not only a synchronous
+        // localStorage value that may not have reached device flash.
+        assertTrue("EPUB bookmark journal did not commit to IndexedDB",
+                waitFor("window.__foliluneJournalCommitted===true", 20));
         // Verify that real IndexedDB has saved the imported publication, not just a memory map.
         eval("window.__foliluneDbStored=false;(()=>{const rq=indexedDB.open('folilune_local_library_v3');rq.onsuccess=()=>{const db=rq.result;const tx=db.transaction('books','readonly');const q=tx.objectStore('books').getAll();q.onsuccess=()=>{window.__foliluneDbStored=q.result.some(x=>x.title==='FOLILUNE Tablet QA')};tx.oncomplete=()=>db.close()};rq.onerror=()=>window.__foliluneDbStored='error'})();true");
         assertTrue("Imported EPUB was not written to actual IndexedDB",
@@ -212,8 +229,15 @@ public class ReaderDurabilityTest {
         // Validate the actual EPUB.js rendition against the EPUB bookmark saved
         // during Stage 1. Do not rely on a separate test-only key surviving
         // a force-stop; that key has proven intermittently nondurable.
-        assertEquals("Saved EPUB bookmark missing after restart", "true",
-                eval(EXPECTED_BOOKMARK + "?.startsWith('epubcfi(')===true"));
+        assertEquals("true", eval("(()=>{const st=" + STATE
+                + ";return Number.isInteger(st.durableRevision)&&st.durableRevision>=1})()"));
+        assertEquals("Saved EPUB bookmark missing after restart: " +
+                eval("(()=>{const st=" + STATE + ";return JSON.stringify({"
+                    + "book:st.book,marks:st.epubBookmarks?.[st.book],"
+                    + "revision:st.durableRevision,"
+                    + "expectedMarker:localStorage.getItem('folilune_android_qa_cfi'),"
+                    + "location:st.readingPositions?.[st.book]?.cfi})})()"),
+                "true",eval(EXPECTED_BOOKMARK + "?.startsWith('epubcfi(')===true"));
         boolean exactCfiRestored = waitFor(
                 LOCATION + "?.cfi===" + EXPECTED_BOOKMARK
                         + " && " + LOCATION + "?.index===1", 30);

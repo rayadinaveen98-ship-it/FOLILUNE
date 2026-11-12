@@ -29,3 +29,7 @@ The v12 EPUB.js, JSZip, EPUB parse/import code, IndexedDB schema, saved EPUB CFI
 4. Content correctness: complex EPUB/Indic/RTL publishing and large library stress not proven.
 5. Real data migration/versioned signing/backup and secure account sync deferred to separately approved work.
 6. G1 and G2 draft branches are **not** production release builds, and the provisional Folded Moon identity still requires final owner sign-off.
+
+
+## G2 durability hardening candidate (2026-11-12)
+A reproducible problem was seen in one Android emulator workflow when a quick force-stop followed a successful localStorage bookmark write. A separate workflow passed. The branch now includes a **transactional IndexedDB mirror** for the local reader state in the existing `books` store, using a reserved, non-book row. The reader restores this checkpoint when it is newer than the localStorage revision. Explicit EPUB bookmark actions wait for that transaction to finish before success is reported. Instrumentation now requires the checkpoint row to actually contain the saved bookmark and CFI before force-stopping the app. This is an experimental remediation; final repeated emulator runs and physical tablet QA determine reliability, not this document.
