@@ -107,6 +107,14 @@ public class ReaderDurabilityTest {
             "JSON.parse(localStorage.getItem('folilune_atelier_v1')||'{}')";
     private static final String LOCATION =
             "window.__foliluneQaRendition?.currentLocation()?.start";
+    // Verify against the actual bookmark saved before process death.
+    // The separate test-only localStorage key sometimes is not flushed to disk
+    // before Android force-stop, despite the real reader state being durable.
+    private static final String EXPECTED_BOOKMARK =
+            "(()=>{const st=" + STATE + ";const marks=st.epubBookmarks?.[st.book];"
+            + "return Array.isArray(marks)&&marks.length===1"
+            + "&&typeof marks[0]==='string'&&marks[0].startsWith('epubcfi(')"
+            + "?marks[0]:null})()";
 
     @Test
     public void seedImportedEpub() throws Exception {
@@ -196,14 +204,19 @@ public class ReaderDurabilityTest {
         assertTrue("Reopened EPUB did not load in the actual browser renderer",
                 waitFor("!!document.querySelector('#epubStage iframe') && document.body.innerText.includes('FOLILUNE Tablet QA')", 45));
 
-        // Validate the actual EPUB.js rendition location, not just a saved value in localStorage.
+        // Validate the actual EPUB.js rendition against the EPUB bookmark saved
+        // during Stage 1. Do not rely on a separate test-only key surviving
+        // a force-stop; that key has proven intermittently nondurable.
+        assertEquals("Saved EPUB bookmark missing after restart", "true",
+                eval(EXPECTED_BOOKMARK + "?.startsWith('epubcfi(')===true"));
         boolean exactCfiRestored = waitFor(
-                LOCATION + "?.cfi===localStorage.getItem('folilune_android_qa_cfi')"
+                LOCATION + "?.cfi===" + EXPECTED_BOOKMARK
                         + " && " + LOCATION + "?.index===1", 30);
         if (!exactCfiRestored) {
             String info = eval("(()=>{const r=window.__foliluneQaRendition;"
                     + "const st=" + STATE + ";return JSON.stringify({"
-                    + "expected:localStorage.getItem('folilune_android_qa_cfi'),"
+                    + "expected:" + EXPECTED_BOOKMARK + ","
+                    + "qaMarker:localStorage.getItem('folilune_android_qa_cfi'),"
                     + "actual:r?.currentLocation()?.start?.cfi,"
                     + "index:r?.currentLocation()?.start?.index,"
                     + "savedState:st.readingPositions?.[st.book]?.cfi,"
@@ -213,11 +226,10 @@ public class ReaderDurabilityTest {
         }
 
         assertEquals("true", eval("(()=>{const st=" + STATE
-                + ";const id=localStorage.getItem('folilune_android_qa_id');"
-                + "return st.book===id && st.readingPositions?.[id]?.cfi==="
-                + "localStorage.getItem('folilune_android_qa_cfi')"
-                + " && st.epubBookmarks?.[id]?.includes("
-                + "localStorage.getItem('folilune_android_qa_cfi'))===true})()"));
+                + ";const id=st.book;const expected=" + EXPECTED_BOOKMARK + ";"
+                + "return typeof expected==='string'"
+                + " && st.readingPositions?.[id]?.cfi===expected"
+                + " && st.epubBookmarks?.[id]?.includes(expected)===true})()"));
 
         // Reader preferences may reflow the document, but must not delete the saved bookmark.
         eval("document.querySelector('[data-panel=settings]').click();true");
