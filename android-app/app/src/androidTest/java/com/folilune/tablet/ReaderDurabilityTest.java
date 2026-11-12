@@ -178,9 +178,20 @@ public class ReaderDurabilityTest {
                 waitFor("!!document.querySelector('#epubStage iframe') && document.body.innerText.includes('FOLILUNE Tablet QA')", 45));
 
         // Validate the actual EPUB.js rendition location, not just a saved value in localStorage.
-        assertTrue("Real EPUB.js did not restore the precise saved CFI after process death",
-                waitFor(LOCATION + "?.cfi===localStorage.getItem('folilune_android_qa_cfi')"
-                        + " && " + LOCATION + "?.index===1", 30));
+        boolean exactCfiRestored = waitFor(
+                LOCATION + "?.cfi===localStorage.getItem('folilune_android_qa_cfi')"
+                        + " && " + LOCATION + "?.index===1", 30);
+        if (!exactCfiRestored) {
+            String info = eval("(()=>{const r=window.__foliluneQaRendition;"
+                    + "const st=" + STATE + ";return JSON.stringify({"
+                    + "expected:localStorage.getItem('folilune_android_qa_cfi'),"
+                    + "actual:r?.currentLocation()?.start?.cfi,"
+                    + "index:r?.currentLocation()?.start?.index,"
+                    + "savedState:st.readingPositions?.[st.book]?.cfi,"
+                    + "restoring:typeof epubRuntime==='undefined'?null:epubRuntime?.restoring,"
+                    + "currentBook:st.book,engine:!!document.querySelector('#epubStage iframe')})})()");
+            fail("Exact EPUB CFI restoration mismatch: " + info);
+        }
 
         assertEquals("true", eval("(()=>{const st=" + STATE
                 + ";const id=localStorage.getItem('folilune_android_qa_id');"
