@@ -44,6 +44,10 @@ jobs:
         run: |
           set -euo pipefail
           node --check android-app/app/src/main/assets/vnext-integrated.js
+          node --check android-app/app/src/main/assets/vnext-g2.js
+          grep -q 'FOLILUNE_REAL_UI' android-app/app/src/main/assets/index.html
+          grep -q 'vnext-g2.css' android-app/app/src/main/assets/index.html
+          grep -q 'vnext-g2.js' android-app/app/src/main/assets/index.html
           grep -q 'vnext-integrated.css' android-app/app/src/main/assets/index.html
           grep -q 'vnext-integrated.js' android-app/app/src/main/assets/index.html
           grep -q "folilune_local_library_v3" android-app/app/src/main/assets/index.html
@@ -60,12 +64,13 @@ jobs:
           set -euo pipefail
           APK=android-app/app/build/outputs/apk/debug/app-debug.apk
           test -s "$APK"
-          for name in index.html vnext-integrated.css vnext-integrated.js; do
+          for name in index.html vnext-integrated.css vnext-integrated.js vnext-g2.css vnext-g2.js; do
             unzip -l "$APK" | grep -q "assets/$name"
           done
           unzip -p "$APK" assets/index.html | grep -q 'folilune-epubjs'
           unzip -p "$APK" assets/index.html | grep -q 'folilune_atelier_v1'
           unzip -p "$APK" assets/vnext-integrated.js | grep -q 'FOLILUNE_G1'
+          unzip -p "$APK" assets/vnext-g2.js | grep -q 'FOLILUNE_G2'
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose "$APK"
           "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | tee /tmp/folilune-g1-badging.txt
           grep -q "package: name='com.folilune.vnextreader'" /tmp/folilune-g1-badging.txt
