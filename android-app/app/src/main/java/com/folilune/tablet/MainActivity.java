@@ -110,6 +110,10 @@ public final class MainActivity extends Activity {
                     } else if ("/assets/vnext-g2-support.css".equals(uri.getPath())) {
                         assetName = "vnext-g2-support.css";
                         mime = "text/css";
+                    } else if ("/assets/vnext-lunar-editorial-g2.css".equals(uri.getPath())) {
+                        // Fixed first-party local G2 stylesheet only; no wildcards.
+                        assetName = "vnext-lunar-editorial-g2.css";
+                        mime = "text/css";
                     } else if ("/assets/vnext-g2-support.js".equals(uri.getPath())) {
                         assetName = "vnext-g2-support.js";
                         mime = "application/javascript";
