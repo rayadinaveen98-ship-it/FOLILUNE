@@ -102,3 +102,20 @@
   min-height:var(--le-g2-hit-min);
 }
 .g2-step button{width:var(--le-g2-hit-min);height:var(--le-g2-hit-min)}
+
+/* Lunar Editorial G2 keyboard focus visibility: keep search-input inner borders
+   quiet, but make their labelled outer surfaces visibly focused. This only
+   affects G2 library/search/notes/help, not EPUB.js publisher content. */
+.g2-search-input:focus-within,
+.g2-search-large:focus-within,
+.g2b-query:focus-within{
+  outline:3px solid var(--v-brass);
+  outline-offset:3px;
+}
+.g2-content .primary,
+.g2-content .secondary,
+.g2-content .pill,
+.g2b-note-foot .secondary,
+.g2b-help-aside .secondary{
+  min-height:var(--le-g2-hit-min);
+}

@@ -405,4 +405,82 @@ public class ReaderDurabilityTest {
         assertEquals("true", eval("document.querySelectorAll('.g2-saved-row').length===0"));
     }
 
+    /** Regression smoke: the G2 shell's minimum hit-area and keyboard focus
+     * contracts. Runs in an Android WebView emulator, NOT a physical device,
+     * and does not claim TalkBack or 200% system-font acceptance. */
+    private void a11yOpen(String view) throws Exception {
+        assertEquals("Cannot navigate to G2 " + view, "true",
+                eval("(()=>{const button=document.querySelector('.nav-btn[data-view='"
+                        + JSONObject.quote(view) + "]');if(!button)return false;"
+                        + "button.click();return !!document.querySelector('.g2-content')})()"));
+    }
+
+    private void a11yHit(String selector) throws Exception {
+        assertEquals("G2 hit area smaller than 48 CSS px: " + selector,
+                "true", eval("(()=>{const el=document.querySelector("
+                        + JSONObject.quote(selector) + ");return !!el"
+                        + "&&el.getBoundingClientRect().height>=47.5})()"));
+    }
+
+    private void a11yFocus(String selector) throws Exception {
+        assertEquals("Missing keyboard-visible search focus indicator: " + selector,
+                "true", eval("(()=>{const el=document.querySelector("
+                        + JSONObject.quote(selector) + ");if(!el"
+                        + "||!el.getAttribute('aria-label'))return false;"
+                        + "el.focus();const parent=el.closest("
+                        + "'.g2-search-input,.g2-search-large,.g2b-query');"
+                        + "if(!parent)return false;const style=getComputedStyle(parent);"
+                        + "return style.outlineStyle!=='none'"
+                        + "&&parseFloat(style.outlineWidth)>=2.5})()"));
+    }
+
+    @Test
+    public void verifyG2ShellTouchAndKeyboardFocus() throws Exception {
+        awaitApplication();
+
+        // Each supported G2 destination exists and core interactions have
+        // measurable Android WebView CSS hit areas, not just icon size.
+        for (String view : new String[]{
+                "home", "library", "search", "saved", "settings",
+                "collections", "notes", "help"}) {
+            a11yHit(".nav-btn[data-view=" + view + "]");
+            a11yOpen(view);
+        }
+
+        a11yOpen("home");
+        a11yHit(".g2-hero .primary");
+        a11yOpen("library");
+        a11yHit(".g2-toolbar .primary");
+        a11yHit(".g2-toolbar select");
+        a11yHit(".g2-filters .pill");
+        a11yFocus("#g2LibraryQuery");
+
+        a11yOpen("search");
+        a11yFocus("#g2Search");
+        a11yOpen("settings");
+        a11yHit(".g2-choice");
+        a11yHit(".g2-step button");
+
+        a11yOpen("collections");
+        a11yHit(".g2b-shelf");
+        a11yOpen("notes");
+        a11yHit(".g2b-note-filters .g2-choice");
+        a11yFocus("#g2bNoteQuery");
+
+        a11yOpen("help");
+        a11yHit(".g2b-help-aside .secondary");
+        a11yHit(".g2b-faq summary");
+        a11yFocus("#g2bHelpQuery");
+
+        // Explicitly exercise the inverse theme's focus outline variable.
+        assertEquals("Night mode hides the help focus indicator", "true",
+                eval("(()=>{document.body.classList.add('vn-night');"
+                        + "const el=document.querySelector('#g2bHelpQuery');el.focus();"
+                        + "const s=getComputedStyle(el.closest('.g2b-query'));"
+                        + "const good=s.outlineStyle!=='none'"
+                        + "&&parseFloat(s.outlineWidth)>=2.5;"
+                        + "document.body.classList.remove('vn-night');return good})()"));
+        a11yOpen("home");
+    }
+
 }

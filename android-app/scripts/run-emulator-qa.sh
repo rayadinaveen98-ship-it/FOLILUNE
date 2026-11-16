@@ -55,13 +55,19 @@ adb shell am instrument -w -e class 'com.folilune.tablet.ReaderDurabilityTest#ve
   com.folilune.vnextreader.test/androidx.test.runner.AndroidJUnitRunner | tee /tmp/folilune-deletion-restart.log
 grep -q 'OK (1 test)' /tmp/folilune-deletion-restart.log
 
-echo "=== Stage 7: screenshot a clean integrated Home after reading verification ==="
+echo "=== Stage 7: verify G2 touch areas and keyboard-visible search focus ==="
+adb shell am force-stop com.folilune.vnextreader
+adb shell am instrument -w -e class 'com.folilune.tablet.ReaderDurabilityTest#verifyG2ShellTouchAndKeyboardFocus' \
+  com.folilune.vnextreader.test/androidx.test.runner.AndroidJUnitRunner | tee /tmp/folilune-g2-ui-a11y.log
+grep -q 'OK (1 test)' /tmp/folilune-g2-ui-a11y.log
+
+echo "=== Stage 8: screenshot a clean integrated Home after reading verification ==="
 mkdir -p android-app/qa-logs
 adb shell am force-stop com.folilune.vnextreader
 adb shell am start -W -n com.folilune.vnextreader/com.folilune.tablet.MainActivity
 sleep 7
 adb shell screencap -p /sdcard/Download/folilune-g1-home.png
 adb pull /sdcard/Download/folilune-g1-home.png android-app/qa-logs/folilune-g1-home.png
-cp /tmp/folilune-seed.log /tmp/folilune-reopen.log /tmp/folilune-stale-cache.log /tmp/folilune-journal-recovery.log /tmp/folilune-book-removal.log /tmp/folilune-deletion-restart.log android-app/qa-logs/ 2>/dev/null || true
+cp /tmp/folilune-seed.log /tmp/folilune-reopen.log /tmp/folilune-stale-cache.log /tmp/folilune-journal-recovery.log /tmp/folilune-book-removal.log /tmp/folilune-deletion-restart.log /tmp/folilune-g2-ui-a11y.log android-app/qa-logs/ 2>/dev/null || true
 
 echo "FOLILUNE vNext G1 real-EPUB WebView persistence tests passed"
