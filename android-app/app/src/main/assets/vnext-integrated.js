@@ -101,6 +101,10 @@
   welcome.innerHTML='<div class="vn-entry">'+
     '<div class="vn-entry-copy">'+
       '<div class="vn-entry-name">'+logo()+'<span>FOLILUNE</span></div>'+
+      '<div class="vn-steps" role="group" aria-label="Welcome progress">'+
+        '<span data-vn-step="0" aria-current="step"><b>01</b> Discover</span>'+
+        '<span data-vn-step="1"><b>02</b> Comfort</span>'+
+        '<span data-vn-step="2"><b>03</b> First book</span></div>'+
       '<div class="vn-entry-kicker" id="vnKicker">A world between pages</div>'+
       '<h1 id="vnHeadline">A quieter world for every story.</h1>'+
       '<p id="vnDescription">A personal reading sanctuary for the stories you bring, the pages you revisit, and the worlds you discover.</p>'+
@@ -133,6 +137,10 @@
       'Books stay in this app’s local storage. Keep your original files: uninstalling or clearing app data can erase saved reading progress.':
       comfort?'Choose how FOLILUNE looks when you arrive. Your book pages have independent reading controls, too.':
       'A personal, offline-first reading space for the books you bring. No account required.';
+    welcome.querySelectorAll('[data-vn-step]').forEach((el,i)=>{
+      if(i===step)el.setAttribute('aria-current','step');
+      else el.removeAttribute('aria-current');
+    });
     welcome.querySelector('#vnComfort').classList.toggle('vn-hidden',!comfort);
     welcome.querySelector('#vnImport').classList.toggle('vn-hidden',!importStep);
     welcome.querySelector('#vnContinue').textContent=importStep?'Import a book from this device →':comfort?'Choose my first book →':'Set my reading comfort →';

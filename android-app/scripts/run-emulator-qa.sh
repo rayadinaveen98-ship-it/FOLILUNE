@@ -67,16 +67,22 @@ adb shell am instrument -w -e class 'com.folilune.tablet.ReaderDurabilityTest#ve
   com.folilune.vnextreader.test/androidx.test.runner.AndroidJUnitRunner | tee /tmp/folilune-g2-onboarding.log
 grep -q 'OK (1 test)' /tmp/folilune-g2-onboarding.log
 
-echo "=== Stage 9: screenshot a clean integrated Home after reading verification ==="
+echo "=== Stage 9: Lunar Editorial design-system regression across eight screens ==="
+adb shell am force-stop com.folilune.vnextreader
+adb shell am instrument -w -e class 'com.folilune.tablet.ReaderDurabilityTest#verifyLunarEditorialSystemAcrossViews' \
+  com.folilune.vnextreader.test/androidx.test.runner.AndroidJUnitRunner | tee /tmp/folilune-g2-design-system.log
+grep -q 'OK (1 test)' /tmp/folilune-g2-design-system.log
+
+echo "=== Stage 10: screenshot a clean integrated Home after reading verification ==="
 mkdir -p android-app/qa-logs
 adb shell am force-stop com.folilune.vnextreader
 adb shell am start -W -n com.folilune.vnextreader/com.folilune.tablet.MainActivity
 sleep 7
 adb shell screencap -p /sdcard/Download/folilune-g1-home.png
 adb pull /sdcard/Download/folilune-g1-home.png android-app/qa-logs/folilune-g1-home.png
-for shot in g2-home-fresh-book.png g2-home-returning-book.png g2-welcome-intro.png g2-welcome-comfort.png g2-welcome-import.png; do
+for shot in g2-home-fresh-book.png g2-home-returning-book.png g2-welcome-intro.png g2-welcome-comfort.png g2-welcome-import.png g2-lunar-system-welcome.png; do
   adb pull "/sdcard/Android/data/com.folilune.vnextreader/files/$shot" "android-app/qa-logs/$shot"
 done
-cp /tmp/folilune-seed.log /tmp/folilune-reopen.log /tmp/folilune-stale-cache.log /tmp/folilune-journal-recovery.log /tmp/folilune-book-removal.log /tmp/folilune-deletion-restart.log /tmp/folilune-g2-ui-a11y.log /tmp/folilune-g2-onboarding.log android-app/qa-logs/ 2>/dev/null || true
+cp /tmp/folilune-seed.log /tmp/folilune-reopen.log /tmp/folilune-stale-cache.log /tmp/folilune-journal-recovery.log /tmp/folilune-book-removal.log /tmp/folilune-deletion-restart.log /tmp/folilune-g2-ui-a11y.log /tmp/folilune-g2-onboarding.log /tmp/folilune-g2-design-system.log android-app/qa-logs/ 2>/dev/null || true
 
 echo "FOLILUNE vNext G1 real-EPUB WebView persistence tests passed"

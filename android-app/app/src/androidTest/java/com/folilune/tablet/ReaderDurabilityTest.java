@@ -605,4 +605,61 @@ public class ReaderDurabilityTest {
                 + "&&window.FOLILUNE_REAL_UI.snapshot().books.length===window.__qaBookCount})()"));
     }
 
+    /** G2 experience-contract smoke. This checks the live Android WebView
+     * shell at default emulator density. It is NOT TalkBack or 200% font QA. */
+    @Test
+    public void verifyLunarEditorialSystemAcrossViews() throws Exception {
+        awaitApplication();
+        assertEquals("Lunar stylesheet missing from integrated APK", "true",
+                eval("!!document.querySelector("
+                        + "'link[href=\"./vnext-lunar-editorial-g2.css\"]')"));
+        assertEquals("Design system tokens not loaded", "true",
+                eval("(()=>{const s=getComputedStyle(document.documentElement);"
+                        + "return s.getPropertyValue('--le-panel-radius').trim()==='18px'"
+                        + "&&s.getPropertyValue('--le-reading-max').trim()==='62ch'})()"));
+        for (String view : new String[]{
+                "home","library","search","saved",
+                "settings","collections","notes","help"}) {
+            a11yOpen(view);
+            assertEquals("Missing G2 design hierarchy on " + view, "true",
+                    eval("(()=>{const main=document.querySelector('#screen>.g2-content');"
+                            + "return !!main&&main.querySelectorAll('.g2-heading h1').length===1"
+                            + "&&getComputedStyle(main).maxWidth!=='none'})()"));
+            assertEquals("Horizontal viewport overflow on " + view, "true",
+                    eval("document.documentElement.scrollWidth<=window.innerWidth+3"));
+        }
+        a11yOpen("home");
+        assertEquals("No hero CTA or book art", "true",
+                eval("!!document.querySelector('.g2-hero .primary')"
+                        + "&&!!document.querySelector('.g2-hero .hero-art svg')"));
+        assertEquals("Welcome steps not integrated", "true",
+                eval("(()=>{window.FOLILUNE_G1.showWelcome();"
+                        + "const steps=[...document.querySelectorAll('[data-vn-step]')];"
+                        + "return steps.length===3"
+                        + "&&steps.filter(e=>e.getAttribute('aria-current')==='step').length===1"
+                        + "&&steps[0].getAttribute('aria-current')==='step'})()"));
+        captureUi("g2-lunar-system-welcome.png");
+        assertEquals("Welcome progress state did not follow comfort", "true",
+                eval("(()=>{document.querySelector('#vnContinue').click();"
+                        + "return document.querySelector('[data-vn-step=\"1\"]')"
+                        + "?.getAttribute('aria-current')==='step'"
+                        + "&&document.querySelector('[data-vn-step=\"0\"]')"
+                        + "?.getAttribute('aria-current')===null})()"));
+        assertEquals("Welcome progress state did not follow import", "true",
+                eval("(()=>{document.querySelector('#vnContinue').click();"
+                        + "return document.querySelector('[data-vn-step=\"2\"]')"
+                        + "?.getAttribute('aria-current')==='step'})()"));
+        eval("document.querySelector('#vnSkip').click();true");
+        assertEquals("Welcome dismiss did not restore shell", "true",
+                eval("document.querySelector('#vnWelcome').hidden&&!document.querySelector('#app').inert"));
+        // Core styles must remain consistent in the night app chrome.
+        assertEquals("Night surfaces lost component tokens", "true",
+                eval("(()=>{document.body.classList.add('vn-night');"
+                        + "const s=getComputedStyle(document.body);"
+                        + "const a=s.getPropertyValue('--le-panel-bg').trim().toLowerCase();"
+                        + "const b=s.getPropertyValue('--v-surface').trim().toLowerCase();"
+                        + "const ok=!!a&&a===b;"
+                        + "document.body.classList.remove('vn-night');return ok})()"));
+    }
+
 }
