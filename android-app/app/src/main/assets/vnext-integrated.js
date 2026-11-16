@@ -90,7 +90,8 @@
     group.querySelector('#vnReplay').addEventListener('click',()=>openWelcome());
   }
   const flag=document.querySelector('.demo-flag');
-  if(flag)flag.textContent='✦ FOLILUNE vNext · Real EPUB Reader / G1 Test';
+  if(flag)flag.textContent='✦ FOLILUNE · G2 experimental reader';
+  document.title='FOLILUNE Reader — G2 experimental';
   const welcome=document.createElement('section');
   welcome.id='vnWelcome';
   welcome.hidden=true;
@@ -113,24 +114,29 @@
           '<input id="vnFontSize" type="range" min="16" max="26" value="19" step="1" aria-label="Preferred reading text size"/>'+
           '<output id="vnFontOutput" for="vnFontSize">19 px</output></div>'+
       '</div>'+
+      '<div id="vnImport" class="vn-hidden" role="group" aria-label="Bring your first book">'+
+        '<p>Choose an EPUB, TXT or Markdown file you own, or explore the reading space first. PDF and CBZ are not supported in this test.</p>'+
+      '</div>'+
       '<div class="vn-entry-actions">'+
         '<button id="vnContinue" class="vn-start" type="button">Personalize my reading →</button>'+
-        '<button id="vnSkip" class="vn-quiet" type="button">Skip and open library</button>'+
+        '<button id="vnSkip" class="vn-quiet" type="button">Skip setup</button>'+
       '</div>'+
       '<div class="vn-entry-footnote">Local-first reading · No account required · Original sample artwork</div>'+
     '</div><div class="vn-entry-art">'+bookArt()+'</div></div>';
   document.body.appendChild(welcome);
   let step=0,lastFocus=null;
   const setScreen=()=>{
-    const comfort=step===1;
-    welcome.querySelector('#vnKicker').textContent=comfort?'Make the page yours':'A world between pages';
-    welcome.querySelector('#vnHeadline').textContent=comfort?'Your pace. Your pages.':'A quieter world for every story.';
-    welcome.querySelector('#vnDescription').textContent=comfort?
-      'Choose how FOLILUNE looks when you arrive. Your book pages have independent reading controls, too.':
-      'A personal reading sanctuary for the stories you bring, the pages you revisit, and the worlds you discover.';
+    const comfort=step===1,importStep=step===2;
+    welcome.querySelector('#vnKicker').textContent=importStep?'Your first book':comfort?'Make the page yours':'A world between pages';
+    welcome.querySelector('#vnHeadline').textContent=importStep?'Bring a story of your own.':comfort?'Your pace. Your pages.':'A quieter world for every story.';
+    welcome.querySelector('#vnDescription').textContent=importStep?
+      'Books stay in this app’s local storage. Keep your original files: uninstalling or clearing app data can erase saved reading progress.':
+      comfort?'Choose how FOLILUNE looks when you arrive. Your book pages have independent reading controls, too.':
+      'A personal, offline-first reading space for the books you bring. No account required.';
     welcome.querySelector('#vnComfort').classList.toggle('vn-hidden',!comfort);
-    welcome.querySelector('#vnContinue').textContent=comfort?'Enter my reading space →':'Personalize my reading →';
-    welcome.querySelector('#vnSkip').textContent=comfort?'Not now':'Skip and open library';
+    welcome.querySelector('#vnImport').classList.toggle('vn-hidden',!importStep);
+    welcome.querySelector('#vnContinue').textContent=importStep?'Import a book from this device →':comfort?'Choose my first book →':'Set my reading comfort →';
+    welcome.querySelector('#vnSkip').textContent=importStep?'Explore first':comfort?'Use defaults':'Skip setup';
     welcome.querySelectorAll('[data-vn-theme]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.vnTheme===prefs.theme)));
     const range=welcome.querySelector('#vnFontSize');range.value=String(Math.max(16,Math.min(26,prefs.readerSize)));
     welcome.querySelector('#vnFontOutput').textContent=range.value+' px';
@@ -162,7 +168,12 @@
       prefs.theme=b.dataset.vnTheme;store();applyTheme();setScreen();return;
     }
     if(b.id==='vnSkip'){closeWelcome(false);return}
-    if(b.id==='vnContinue'){if(step===0){step=1;setScreen();b.focus()}else closeWelcome(true);}
+    if(b.id==='vnContinue'){
+      if(step<2){step++;setScreen();b.focus();return}
+      closeWelcome(true);
+      // Delegate to the existing Android document picker and validation.
+      document.getElementById('importBookInput')?.click();
+    }
   });
   welcome.querySelector('#vnFontSize').addEventListener('input',e=>{
     prefs.readerSize=Number(e.target.value);welcome.querySelector('#vnFontOutput').textContent=prefs.readerSize+' px';

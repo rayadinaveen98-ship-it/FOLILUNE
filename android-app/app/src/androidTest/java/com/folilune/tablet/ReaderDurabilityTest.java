@@ -484,4 +484,33 @@ public class ReaderDurabilityTest {
         a11yOpen("home");
     }
 
+    /** Source-backed G2 first-run/compact Home acceptance smoke.
+     * Never opens a real Android file chooser or modifies an imported book. */
+    @Test
+    public void verifyG2LunarFirstRunAndHome() throws Exception {
+        awaitApplication();
+        assertEquals("true", eval("document.title.includes('G2 experimental')"
+                + "&&document.querySelector('.demo-flag')?.textContent.includes('G2 experimental')"
+                + "&&document.querySelector('#topTitle')?.textContent==='Home'"));
+        assertEquals("true", eval("(()=>{const h=document.querySelector('.g2-home');"
+                + "return !!h&&h.classList.contains('g2-home-empty')"
+                + "&&h.querySelectorAll('[data-action=import-file]').length===1})()"));
+        assertEquals("true", eval("(()=>{window.__qaBookCount=window.FOLILUNE_REAL_UI.snapshot().books.length;"
+                + "window.FOLILUNE_G1.showWelcome();"
+                + "return !document.querySelector('#vnWelcome').hidden"
+                + "&&document.querySelector('#vnComfort').classList.contains('vn-hidden')})()"));
+        assertEquals("true", eval("(()=>{document.querySelector('#vnContinue').click();"
+                + "return !document.querySelector('#vnComfort').classList.contains('vn-hidden')"
+                + "&&document.querySelector('#vnImport').classList.contains('vn-hidden')})()"));
+        assertEquals("true", eval("(()=>{document.querySelector('#vnContinue').click();"
+                + "const b=document.querySelector('#vnContinue');"
+                + "return !document.querySelector('#vnImport').classList.contains('vn-hidden')"
+                + "&&b.textContent.includes('Import a book')"
+                + "&&!!document.querySelector('#importBookInput')})()"));
+        assertEquals("true", eval("(()=>{document.querySelector('#vnSkip').click();"
+                + "return document.querySelector('#vnWelcome').hidden"
+                + "&&!document.querySelector('#app').inert"
+                + "&&window.FOLILUNE_REAL_UI.snapshot().books.length===window.__qaBookCount})()"));
+    }
+
 }

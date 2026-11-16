@@ -88,3 +88,12 @@
 **Visual accessibility:** G2 source styles have 44–45px minimums for some navigation, choice and font stepper controls, less than the 48dp Android target. A narrowly scoped G2 CSS correction moves these hit areas to 48 CSS pixels as a test candidate, with no change to EPUB rendering, stored data or palette. CSS pixels must still be verified against actual Android dp hit areas and TalkBack focus; do not call this fully accessible yet.
 
 **Design system:** The [Lunar Editorial G2 system candidate](LUNAR_EDITORIAL_G2_SYSTEM_CANDIDATE_2026-11-16.md) records existing source values, measured contrast pairs, proposed token grammar, motion and review gates. Direction APPROVED; detailed token values/mark/screens CANDIDATE pending visual acceptance.
+
+## 2026-11-16 G2-C scoped Lunar Editorial first-run and compact Home implementation
+**Status:** IMPLEMENTED in the experimental G2 branch; visual acceptance and physical-device validation remain OPEN.
+
+**Source-backed findings:** The earlier welcome had no direct import action; Skip incorrectly claimed to open Library but simply closed the welcome. The badge still said G1, and empty Home repeated the import CTA while a tall hero pushed the local library below the fold.
+
+**Changes, limited to G2 presentation:** A three-decision first-run flow (understand local-first promise → choose app tone and reader size → import EPUB/TXT/Markdown or explore first). The import button delegates to the existing `#importBookInput` Android document picker; no permissions, file parser, IndexedDB schema or EPUB.js engine changes. The G2 badge, browser title and experimental launcher label are corrected. Empty Home now has one primary import action, a reduced hero height at compact width and a truthful empty-library explanation; Home/Library top-bar names are shorter. A ninth Android emulator QA stage validates the flow without opening the OS picker.
+
+**Not delivered:** final Folded Moon brand assets, release, G3 features, physical tablet acceptance, TalkBack/200% text validation, final first-run artwork or approval of exact token values. CI must be checked at this exact commit; earlier results do not verify these changes.

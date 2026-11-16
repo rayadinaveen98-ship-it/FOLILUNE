@@ -119,3 +119,19 @@
 .g2-content .g2b-help-aside .secondary{
   min-height:var(--le-g2-hit-min);
 }
+
+/* Lunar Editorial G2 compact Home hierarchy: no EPUB renderer changes. */
+.g2-home-empty .g2-heading{margin-bottom:22px}
+.g2-home-empty .g2-heading .page-title{font-size:clamp(28px,2.8vw,39px)}
+.g2-home-empty .g2-section{margin-top:27px}
+@media(max-width:720px){
+ .g2-home-empty .g2-heading{margin-bottom:15px}
+ .g2-home-empty .g2-heading .page-sub{line-height:1.45;margin:5px 0 0}
+ .g2-home-empty .g2-hero .hero-copy{padding:23px 23px 10px}
+ .g2-home-empty .g2-hero .hero-copy h2{font-size:clamp(29px,7.5vw,35px);margin:9px 0 8px}
+ .g2-home-empty .g2-hero .hero-copy p{line-height:1.48;margin:0 0 13px}
+ .g2-home-empty .g2-hero .hero-art{height:145px;min-height:145px}
+ .g2-home-empty .g2-hero .hero-art svg{min-height:145px}
+ .g2-home-empty .g2-section{margin-top:22px}
+ .g2-home-empty .g2-empty{padding:21px 19px}
+}

@@ -31,12 +31,12 @@
       '<p>Bring a book you own into a calm, private place to read. No account is required.</p>'+
       '<button class="primary" data-action="import-file">Add your first book &nbsp; ↗</button>';
     const samples=all().filter(b=>!b.imported).slice(0,3);
-    return '<div class="content g2-content">'+heading('YOUR READING SANCTUARY','Welcome back to the page.','A beautiful space for the books you bring — ready whenever you are.')+
+    return '<div class="content g2-content g2-home'+(own.length?'':' g2-home-empty')+'">'+heading('YOUR PRIVATE READING ROOM',recent?'Welcome back.':'A world between pages.',recent?'Pick up exactly where you left off.':'The books you bring. A quieter place to read.')+
       '<section class="hero g2-hero"><div class="hero-copy">'+intro+'</div>'+artwork+
       '<div class="hero-progress">'+(own.length?safe(own.length)+' local '+(own.length===1?'book':'books'):'Your shelf is waiting')+'</div></section>'+
       '<section class="g2-section"><div class="section-title"><h2>On your reading desk</h2><button data-view="library">See your library ↗</button></div>'+
       (own.length?'<div class="g2-shelf">'+own.slice(0,5).map(b=>tile(b)).join('')+'</div>':
-      '<div class="g2-empty"><span aria-hidden="true">✧</span><strong>Your library begins with a book.</strong><p>Import a DRM-free EPUB, TXT or Markdown file from this device. PDF and CBZ are not yet supported.</p><button class="secondary" data-action="import-file">Choose a book</button></div>')+
+      '<div class="g2-empty"><span aria-hidden="true">✧</span><strong>No books added yet.</strong><p>Use “Add your first book” above to import EPUB, TXT or Markdown. The sample covers below are not your library.</p></div>')+
       '</section><section class="g2-section"><div class="section-title"><h2>Explore the reading experience</h2><span class="g2-honest">Interactive samples · not your books</span></div>'+
       '<div class="g2-shelf">'+samples.map(b=>tile(b)).join('')+'</div></section>'+
       '<div class="g2-assurance"><span>⌑</span><div><strong>Local-first reading</strong><p>Your imported files and saved locations stay in this app’s local storage. Uninstalling or clearing app data may erase them; cloud sync is not enabled.</p></div></div></div>';
@@ -96,8 +96,8 @@
       '<section class="g2-panel"><h2>Library and privacy</h2><p>Your library is local to this test app. There is no account or cloud backup. Keep copies of original EPUBs before changing devices, clearing storage or uninstalling the APK.</p><button class="secondary" data-view="library">Open local library ↗</button></section>'+
       '<section class="g2-panel"><h2>About this build</h2><p>vNext G2-A experimental Android UI, built on real EPUB.js v12. Comics, PDF support, cloud publishing and synchronization are not enabled here.</p></section></div></div>';
   }
-  api.register('home',home,'Your Reading Space');
-  api.register('library',library,'Your Library');
+  api.register('home',home,'Home');
+  api.register('library',library,'Library');
   api.register('search',search,'Search');
   api.register('saved',saved,'Saved Places');
   api.register('settings',settings,'Settings');

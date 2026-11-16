@@ -184,3 +184,10 @@ body.vn-night{
  #vnWelcome .vn-entry{animation:none!important}
  .nav-btn,.reading-card,.book-card,.collection,.vn-control{transition:none!important}
 }
+
+/* G2 Lunar Editorial first-use candidate: honest local-import step. */
+.vn-entry #vnImport{max-width:415px;padding:15px 17px;border-left:3px solid var(--v-brass);
+  background:var(--v-soft);border-radius:0 12px 12px 0}
+.vn-entry #vnImport p{font-size:13px;line-height:1.65}
+.vn-night .vn-entry #vnImport{background:var(--v-soft)}
+.vn-entry button.vn-choice{min-height:48px!important}
