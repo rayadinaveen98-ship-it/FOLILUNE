@@ -27,16 +27,16 @@
       '<div class="eyebrow">YOUR STORY IS HERE</div><h2>'+safe(recent.title)+'</h2>'+
       '<p>Return to the page you last visited. Your reading position is stored on this device.</p>'+
       '<button class="primary" data-book="'+safe(recent.id)+'">Continue reading &nbsp; ↗</button>':
-      '<div class="eyebrow">A WORLD BETWEEN PAGES</div><h2>Your next chapter starts here.</h2>'+
-      '<p>Bring a book you own into a calm, private place to read. No account is required.</p>'+
+      '<div class="eyebrow">BEGIN WITH A BOOK</div>'+
+      '<p class="g2-home-promise">Choose a DRM-free EPUB, TXT or Markdown file to begin. Your book stays on this device.</p>'+
       '<button class="primary" data-action="import-file">Add your first book &nbsp; ↗</button>';
     const samples=all().filter(b=>!b.imported).slice(0,3);
-    return '<div class="content g2-content g2-home'+(own.length?'':' g2-home-empty')+'">'+heading('YOUR PRIVATE READING ROOM',recent?'Welcome back.':'A world between pages.',recent?'Pick up exactly where you left off.':'The books you bring. A quieter place to read.')+
+    return '<div class="content g2-content g2-home'+(own.length?' g2-home-occupied':' g2-home-empty')+'">'+heading('YOUR PRIVATE READING ROOM',recent?'Welcome back.':'A world between pages.',recent?'Your last opened book is ready.':'A quiet reading room for the books you own. No account needed.')+
       '<section class="hero g2-hero"><div class="hero-copy">'+intro+'</div>'+artwork+
-      '<div class="hero-progress">'+(own.length?safe(own.length)+' local '+(own.length===1?'book':'books'):'Your shelf is waiting')+'</div></section>'+
+      (own.length?'<div class="hero-progress">'+safe(own.length)+' local '+(own.length===1?'book':'books')+'</div>':'')+'</section>'+
       '<section class="g2-section"><div class="section-title"><h2>On your reading desk</h2><button data-view="library">See your library ↗</button></div>'+
       (own.length?'<div class="g2-shelf">'+own.slice(0,5).map(b=>tile(b)).join('')+'</div>':
-      '<div class="g2-empty"><span aria-hidden="true">✧</span><strong>No books added yet.</strong><p>Use “Add your first book” above to import EPUB, TXT or Markdown. The sample covers below are not your library.</p></div>')+
+      '<div class="g2-home-shelf-note"><span aria-hidden="true">✧</span><span><strong>Your shelf is empty.</strong><small>Books you import will appear here. Explore the clearly marked samples below.</small></span></div>')+
       '</section><section class="g2-section"><div class="section-title"><h2>Explore the reading experience</h2><span class="g2-honest">Interactive samples · not your books</span></div>'+
       '<div class="g2-shelf">'+samples.map(b=>tile(b)).join('')+'</div></section>'+
       '<div class="g2-assurance"><span>⌑</span><div><strong>Local-first reading</strong><p>Your imported files and saved locations stay in this app’s local storage. Uninstalling or clearing app data may erase them; cloud sync is not enabled.</p></div></div></div>';

@@ -505,6 +505,17 @@ public class ReaderDurabilityTest {
         assertEquals("true", eval("(()=>{const h=document.querySelector('.g2-home');"
                 + "return !!h&&h.classList.contains('g2-home-empty')"
                 + "&&h.querySelectorAll('[data-action=import-file]').length===1})()"));
+        // Verify one editorial H1, no competing hero headline or empty-card
+        // import CTA; keep the first reading desk within a compact viewport.
+        assertEquals("Empty Home still repeats its headline or import action", "true",
+                eval("(()=>{const h=document.querySelector('.g2-home-empty');"
+                        + "const hero=h?.querySelector('.g2-hero');"
+                        + "const desk=h?.querySelector('.g2-section');"
+                        + "return !!desk&&h.querySelectorAll('h1').length===1"
+                        + "&&!hero.querySelector('h2')&&!hero.querySelector('.hero-progress')"
+                        + "&&!!h.querySelector('.g2-home-shelf-note')"
+                        + "&&!desk.querySelector('.g2-empty')"
+                        + "&&desk.getBoundingClientRect().top<window.innerHeight})()"));
         assertEquals("true", eval("(()=>{window.__qaBookCount=window.FOLILUNE_REAL_UI.snapshot().books.length;"
                 + "window.FOLILUNE_G1.showWelcome();"
                 + "return !document.querySelector('#vnWelcome').hidden"

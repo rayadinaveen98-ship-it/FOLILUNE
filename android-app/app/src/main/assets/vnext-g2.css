@@ -135,3 +135,24 @@
  .g2-home-empty .g2-section{margin-top:22px}
  .g2-home-empty .g2-empty{padding:21px 19px}
 }
+
+/* G2-D Lunar Editorial empty Home: single H1, one import CTA and a compact
+   reading-desk notice. Presentation only; populated Home and EPUB shell stay
+   independent. */
+.g2-home-empty .g2-hero{min-height:0}
+.g2-home-empty .g2-hero .hero-copy{padding:24px 10px 24px 32px}
+.g2-home-empty .g2-hero .g2-home-promise{font-size:14px;line-height:1.65;margin:12px 0 18px;max-width:360px}
+.g2-home-empty .g2-hero .hero-art{min-height:180px}
+.g2-home-empty .g2-hero .hero-art svg{min-height:180px;mask-image:linear-gradient(to bottom,transparent 0%,#000 15%,#000 100%)}
+.g2-home-shelf-note{display:flex;align-items:center;gap:14px;border:1px dashed var(--v-line);border-radius:16px;padding:17px 20px;background:var(--v-surface)}
+.g2-home-shelf-note>span:first-child{font-size:23px;color:var(--v-brass);flex:none}
+.g2-home-shelf-note strong{display:block;font:500 18px/1.4 Georgia,serif;color:var(--v-ink)}
+.g2-home-shelf-note small{display:block;margin-top:3px;color:var(--v-muted);font:400 12px/1.55 system-ui}
+@media(max-width:720px){
+ .g2-home-empty .g2-heading .page-title{font-size:clamp(28px,7vw,36px)}
+ .g2-home-empty .g2-hero .hero-copy{padding:19px 22px 12px}
+ .g2-home-empty .g2-hero .g2-home-promise{margin:10px 0 14px}
+ .g2-home-empty .g2-hero .hero-art{height:108px;min-height:108px;overflow:hidden}
+ .g2-home-empty .g2-hero .hero-art svg{height:108px;min-height:108px;mask-image:linear-gradient(to bottom,#000 68%,transparent 100%)}
+ .g2-home-shelf-note{padding:15px 14px}
+}
