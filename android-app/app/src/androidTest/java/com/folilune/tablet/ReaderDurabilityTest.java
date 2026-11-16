@@ -410,8 +410,9 @@ public class ReaderDurabilityTest {
      * and does not claim TalkBack or 200% system-font acceptance. */
     private void a11yOpen(String view) throws Exception {
         assertEquals("Cannot navigate to G2 " + view, "true",
-                eval("(()=>{const button=document.querySelector('.nav-btn[data-view='"
-                        + JSONObject.quote(view) + "]');if(!button)return false;"
+                eval("(()=>{const button=document.querySelector("
+                        + JSONObject.quote(".nav-btn[data-view=" + view + "]")
+                        + ");if(!button)return false;"
                         + "button.click();return !!document.querySelector('.g2-content')})()"));
     }
 
