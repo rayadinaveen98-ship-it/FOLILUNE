@@ -1,5 +1,5 @@
 # FOLILUNE — Decision Register
-_Last reviewed: 11 November 2026_
+_Last reviewed: 16 November 2026; historical decisions retained below._
 
 | ID | Status | Decision / constraint | Rationale |
 | --- | --- | --- | --- |
@@ -51,6 +51,14 @@ _Last reviewed: 11 November 2026_
 | D-038 | VERIFIED — EMULATOR ONLY | Android API 34 WebView retains an imported EPUB in IndexedDB after app force-stop/relaunch and reopens it using EPUB.js. | 2/2 GitHub Actions instrumented tests passed; physical tablet, exact CFI and bookmarks remain unverified. |
 
 | D-039 | VERIFIED — AOSP EMULATOR ONLY | An EPUB.js reading CFI and its bookmark survive a full Android process restart, with exact live rendition CFI restored under unchanged viewport and chapter/bookmark retained after font resize. | Passing API 34 Android WebView instrumented tests 2/2; hardware and exact reflow position still open. |
+
+
+| D-040 | **CONFIRMED — 2026-11-16** | **Lunar Editorial** is the official vNext design direction, evolving the approved Modern Atelier baseline. | Founder explicitly approved. This authorizes a design direction, **not** every token, animation, icon master or unrelated feature. |
+| D-041 | **CONFIRMED — 2026-11-16** | Continue a G2 end-to-end audit and **verified, narrowly scoped engineering** on the experimental branch; preserve unrelated working features and existing user data. | Founder authorization. PR #7 remains draft and unmerged; no public release authorization. |
+| D-042 | **PROPOSED — G2 gate** | Require device-tested onboarding, icon/brand, empty/loading/error states, adaptive layouts, reading comfort, accessible motion and design consistency before closing G2. | Research recommendation, subject to actual device evidence and detailed design acceptance. |
+| D-043 | **IN TEST — G2 integrity fix** | On imported-book deletion, clear its EPUB bookmarks, reading position, preview bookmarks, per-book reading mode and last-opened record; dispose its active EPUB renderer first. Add stale-cache journal and deletion/restart emulator regression stages. | Audited source showed orphan EPUB CFI bookmarks and potential checkpoint resurrection. Patch is committed to PR #7; CI and physical testing remain separate gates. |
+| D-044 | **PROPOSED / NOT IMPLEMENTED** | Evaluate Quiet Margin, Book Map Lite and opt-in Reading Rituals only after source-linked annotation architecture and core reader reliability are proven. | Creative concepts from the end-to-end audit; not approval for G3/G5 implementation. |
+| D-045 | **OPEN / DEFERRED** | Versioned data export/import, v12 migration, signing/update path and optional account/cloud sync require a separately approved scope and risk review. | Earlier owner deferral remains in effect. The audit recommends local portability before sync, but no data-migration action is authorized yet. |
 
 ## Rules
 A PROPOSED or OPEN item is not permission to implement it. New product decisions should be added here with date and reasoning. Preserve history if a confirmed decision is superseded.

@@ -1,0 +1,98 @@
+/* FOLILUNE G2 — Lunar Editorial: shared component contract v0.1.
+   Applied AFTER G1/G2/B surface styles, scoped to the connected UI and
+   welcoming shell. No EPUB.js iframe, EPUB CSS or book data changes. */
+:root{
+  --le-display:Georgia,"Times New Roman",serif;
+  --le-interface:system-ui,"Segoe UI",Arial,sans-serif;
+  --le-panel-radius:18px;
+  --le-control-radius:12px;
+  --le-reading-max:62ch;
+  --le-panel-bg:var(--v-surface);
+  --le-border:var(--v-line);
+  --le-focus:var(--v-brass);
+  --le-shadow:0 10px 38px #26342e0b;
+  --le-space-1:8px;--le-space-2:12px;--le-space-3:16px;
+  --le-space-4:24px;--le-space-5:32px;
+}
+.g2-content{font-family:var(--le-interface);color:var(--v-ink);min-width:0}
+.g2-heading{align-items:flex-start;margin-bottom:24px}
+.g2-heading .page-title{font:400 clamp(30px,3.3vw,46px)/1.13 var(--le-display);
+  letter-spacing:-.025em;overflow-wrap:break-word;color:var(--v-ink)}
+.g2-heading .eyebrow,.g2-content .eyebrow{font:750 11px/1.5 var(--le-interface);
+  letter-spacing:.14em;color:var(--v-brass)}
+.g2-heading .page-sub{font:400 14px/1.65 var(--le-interface);
+  margin-top:9px;max-width:var(--le-reading-max);color:var(--v-muted)}
+.g2-section{margin-top:34px}
+.g2-section .section-title{align-items:baseline;gap:14px;flex-wrap:wrap}
+.g2-section .section-title h2{font:400 clamp(20px,2vw,26px)/1.3 var(--le-display);
+  letter-spacing:-.015em;color:var(--v-ink)}
+.g2-content .primary,.g2-content .secondary,.g2-content button[data-view]{
+  border-radius:var(--le-control-radius);
+  min-height:48px;font-family:var(--le-interface);
+  font-size:14px;font-weight:600}
+.g2-content .primary{box-shadow:0 4px 12px #172e2019}
+.g2-content :where(.g2-panel,.g2-empty,.g2-assurance,.g2b-note-card,.g2b-faq){
+  border-color:var(--le-border);border-radius:var(--le-panel-radius);
+  background:var(--le-panel-bg)}
+.g2-panel h2,.g2-empty strong{font-family:var(--le-display)}
+.g2-empty p,.g2-assurance p,.g2-panel p{max-width:var(--le-reading-max)}
+.g2-assurance{margin-top:29px;align-items:center;gap:14px}
+.g2-assurance>span{font-size:22px;flex:none}
+.g2-book-cover,.g2b-book-cover{box-shadow:var(--le-shadow);
+  border-radius:14px}
+.g2-book-title,.g2b-book-title{font-family:var(--le-display)}
+.g2-content :where(.g2-book,.g2b-book,.g2b-shelf,.g2-choice,
+  .g2-saved-row,.g2b-faq summary,.secondary,.primary):focus-visible,
+#vnWelcome :where(button,input):focus-visible{
+  outline:3px solid var(--le-focus);outline-offset:3px}
+.g2b-shelf{border-color:var(--le-border);border-radius:var(--le-panel-radius)}
+.g2b-shelf strong{font-family:var(--le-display)}
+.g2b-shelf>span:not(.g2b-shelf-symbol){max-width:26ch}
+.g2b-note-text{font-family:var(--le-display)}
+.g2-search-input,.g2-search-large,.g2b-query{border-radius:var(--le-control-radius)}
+/* Onboarding: one predictable three-step language across all screens. */
+#vnWelcome .vn-entry-copy{gap:15px}
+#vnWelcome .vn-steps{display:flex;align-items:stretch;gap:7px;
+  width:100%;max-width:440px;flex-wrap:wrap;
+  font:600 11px/1.4 var(--le-interface);color:var(--v-muted)}
+#vnWelcome .vn-steps>span{display:inline-flex;align-items:center;gap:6px;
+  padding:8px 9px;border:1px solid var(--v-line);border-radius:10px;
+  min-width:0;white-space:nowrap;background:var(--v-surface)}
+#vnWelcome .vn-steps>span b{font-size:10px;color:var(--v-brass)}
+#vnWelcome .vn-steps>span[aria-current="step"]{
+  background:var(--v-soft);color:var(--v-ink);border-color:var(--v-brass)}
+#vnWelcome .vn-entry h1{max-width:12.5ch;text-wrap:balance}
+#vnWelcome .vn-entry p{line-height:1.65}
+#vnWelcome .vn-entry-actions{gap:10px}
+#vnWelcome .vn-entry button{font-size:14px}
+#vnWelcome .vn-entry-footnote{line-height:1.6}
+body.vn-night{
+  --le-panel-bg:var(--v-surface);--le-border:var(--v-line);
+  --le-focus:var(--v-brass);--le-shadow:none;
+}
+.vn-night .g2b-help-aside{border:1px solid var(--v-line)}
+.vn-night .g2-content .g2-book-cover,
+.vn-night .g2-content .g2b-book-cover{box-shadow:none}
+@media(hover:hover){
+  .g2-content :where(.g2-book,.g2b-book,.g2b-shelf){transition:transform .18s ease}
+  .g2-content :where(.g2-book,.g2b-book,.g2b-shelf):hover{transform:translateY(-2px)}
+}
+@media(max-width:720px){
+  .g2-heading{margin-bottom:18px}
+  .g2-heading .page-title{font-size:clamp(28px,7vw,38px)}
+  .g2-heading .page-sub{font-size:14px;line-height:1.55}
+  .g2-section{margin-top:26px}
+  .g2-content .g2-assurance{padding:18px}
+  .g2-content .g2b-help-layout{gap:16px}
+  #vnWelcome .vn-steps{gap:6px}
+  #vnWelcome .vn-steps>span{font-size:10px;padding:7px 8px}
+  #vnWelcome .vn-entry h1{max-width:15ch}
+}
+@media(max-width:370px){
+  #vnWelcome .vn-steps{gap:4px}
+  #vnWelcome .vn-steps>span{font-size:9px;padding:7px 6px}
+}
+@media(prefers-reduced-motion:reduce){
+  .g2-content :where(button,.g2-book,.g2b-book,.g2b-shelf){transition:none!important;animation:none!important}
+  #vnWelcome .vn-steps>span{transition:none!important}
+}

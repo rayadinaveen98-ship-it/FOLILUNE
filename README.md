@@ -3,12 +3,16 @@
 
 FOLILUNE is a tablet- and laptop-first reading experience in preproduction. The product aims to make reading novels, visual stories, nonfiction, essays, and other written forms deeply personal and beautifully simple, while revealing richer capabilities only when readers need them.
 
-## Product status
-- **Stage:** Phase 0 — discovery and preproduction
-- **Code:** Not started
-- **Visual UI:** Not approved
-- **Platform strategy:** Tablet and laptop first; precise deployment targets TBD
-- **Tagline:** Working concept, not final marketing copy
+## Product status (verified 2026-11-16)
+- **Stage:** **G2 — Experience Foundation & Acceptance**, experimental; **not released**.
+- **Code:** Real offline EPUB.js Android WebView integration and connected Home/Library/Search/Saved Places/Settings/Collections/Notes/Help exist on draft [PR #7](https://github.com/rayadinaveen98-ship-it/FOLILUNE/pull/7), based on experimental G1 [PR #6](https://github.com/rayadinaveen98-ship-it/FOLILUNE/pull/6). This is **not** merged to main.
+- **Verification:** Three emulator CI workflows passed at G2 commit `03b91a4a`. New G2 deletion/recovery regression tests were added later and require their **own** passing run before any success claim.
+- **Visual direction:** Founder approved **Lunar Editorial**, evolving Modern Atelier, on 2026-11-16. Folded Moon final artwork, tokens, animation and screen-by-screen design are **not yet approved or implemented**.
+- **Platform:** Experimental Android tablet package `com.folilune.vnextreader`. Physical tablet, laptop-grade behavior and release readiness remain unverified.
+- **Data protection:** Existing v12 `com.folilune.tablet` and G2 have **separate private storage**; no migration or working Android backup/export path. Do not uninstall, clear data, change signing identity or assume continuity. Keep original book files.
+- **Tagline:** “A world between pages” remains working copy; “Your private reading room” is a proposed positioning line, not finalized marketing copy.
+
+See the [2026-11-16 G2 audit and acceptance register](docs/G2_EXPERIENCE_AUDIT_2026-11-16.md), [updated roadmap](docs/ROADMAP.md) and [decision register](docs/DECISIONS.md).
 
 ## Core experience principles
 1. **Calm on the surface, powerful beneath:** progressive discovery over feature dumping.
