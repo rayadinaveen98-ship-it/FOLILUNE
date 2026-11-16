@@ -85,3 +85,22 @@ The debug APK in draft [PR #3](https://github.com/rayadinaveen98-ship-it/FOLILUN
 - Earlier exploratory runs had an intermittent exact CFI mismatch despite subsequent passing runs; repeat stress tests and physical tablet QA before declaring reading continuity stable.
 
 **Next gate:** physical tablet UX validation of G1 followed by visual parity G2, data migration and multi-device stability. Account/sync and backup remain separate user-authorized scope.
+
+
+## 2026-11-16 — G2 experience audit and Lunar Editorial decision (CURRENT)
+**Source:** [G2 end-to-end experience audit and acceptance register](G2_EXPERIENCE_AUDIT_2026-11-16.md). **Founder decision:** Lunar Editorial approved as an evolution of Modern Atelier. Do not silently replace existing screens or widen product scope.
+
+**Verified baseline at start:** draft [PR #7](https://github.com/rayadinaveen98-ship-it/FOLILUNE/pull/7), experimental G2 head `03b91a4a`; integrated Android EPUB/CFI, Android debug APK and independent WebView durability workflows all concluded **success**. This is emulator evidence only, **not** physical-tablet acceptance, EPUB conformance or release readiness.
+
+**G2 narrow engineering follow-up:** commit `3bac6a5` fixes orphan EPUB bookmarks/reading state after deleting a book and adds four instrumented regression stages: stale localStorage vs IndexedDB checkpoint, saved-place CFI recovery, active-renderer book removal and no-resurrection after restart. **New tests are not marked passed until their own CI workflows complete.** No unrelated reader features changed.
+
+### Approved direction, proposed stage gates
+| Stage | Status | Scope / acceptance gate |
+| --- | --- | --- |
+| **G2 — Experience Foundation & Acceptance** | **ACTIVE** | Finish actual-tablet audit; Lunar Editorial tokens/icon master/onboarding/empty and error states; adaptive navigation; 200% text scale and reduced motion; preserve G1 real EPUB path. Exit only with founder visual acceptance and no P0 device defects. |
+| **G3 — Reading Depth & Personal Library** | **PROPOSED — needs scoped approval** | Source-linked EPUB highlights/notes, persistent manual/smart collections, in-book search, deeper typography, source navigation and annotation export. Exit with reopen/force-stop/rotation persistence tests. |
+| **G4 — Reliability, Accessibility & Data Safety** | **PROPOSED — release gate** | EPUB compatibility and hostile-file corpus; stress and security; backup/export and v12 migration strategy after approval; TalkBack, keyboard, 200% scaling, RTL/Indic and multi-window physical QA. No known P0 data-loss/security/accessibility defects. |
+| **G5 — Controlled Expansion** | **DEFERRED** | Laptop experience and optional advanced concepts, PDF/comic feasibility, account/sync/AI only if separately authorized and costed. |
+| **G6 — Beta & Release** | **NOT STARTED** | Signing, migration-safe update, store/legal/privacy/license review, controlled beta, metrics and explicit founder release approval. |
+
+**Priority order:** (1) CI-confirm integrity patch, (2) physical tablet walkthrough and defect log, (3) Lunar Editorial design tokens and first-run acceptance, (4) accessibility/EPUB stress, (5) only then request approval for G3. Original Phase 0–6 and v8–G1 history above remains intact; this section governs the current vNext experiment.
