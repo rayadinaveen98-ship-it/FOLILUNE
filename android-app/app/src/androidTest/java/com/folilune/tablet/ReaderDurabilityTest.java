@@ -80,6 +80,12 @@ public class ReaderDurabilityTest {
         assertTrue("G2 connected surfaces not initialized",
                 waitFor("window.FOLILUNE_G2?.version==='g2a'", 15));
         assertEquals("true", eval("window.FOLILUNE_REAL_UI?.snapshot().books.length>=7"));
+        // Check the very first G2 Home before any test navigation.
+        // The older check navigated across G2 screens and hid a first-load
+        // race where the initial render still used the v12 demo Home.
+        assertTrue("First launch displayed old v12 Home instead of connected G2",
+                waitFor("!!document.querySelector('#screen > .g2-home .g2-hero')"
+                        + "&&document.querySelector('#topTitle')?.textContent==='Home'", 15));
         assertEquals("true", eval("(()=>{document.querySelector('.nav-btn[data-view=search]').click();"
                 + "return !!document.querySelector('#g2Search')"
                 + "&& document.querySelector('#topTitle').textContent==='Search'})()"));
