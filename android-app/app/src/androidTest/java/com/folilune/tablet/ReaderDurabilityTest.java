@@ -105,7 +105,7 @@ public class ReaderDurabilityTest {
      * Used only in instrumentation; never included as an app UI feature.
      */
     private void observeRendition() throws Exception {
-        assertEquals("true", eval("(()=>{const original=window.ePub;if(typeof original!=='function')return false;window.ePub=function(...args){const book=original(...args);const renderTo=book.renderTo.bind(book);book.renderTo=function(...renderArgs){const rendition=renderTo(...renderArgs);window.__foliluneQaRendition=rendition;return rendition};return book};return true})()"));
+        assertEquals("true", eval("(()=>{const original=window.ePub;if(typeof original!=='function')return false;window.ePub=function(...args){const book=original(...args);const renderTo=book.renderTo.bind(book);book.renderTo=function(...renderArgs){const rendition=renderTo(...renderArgs);const display=rendition.display.bind(rendition);rendition.display=function(target,...rest){window.__foliluneQaRequestedDisplay=target;return display(target,...rest)};window.__foliluneQaRendition=rendition;return rendition};return book};return true})()"));
     }
 
     private static final String STATE =
@@ -327,8 +327,25 @@ public class ReaderDurabilityTest {
                 + "if(!row)return false;row.click();return true})()"));
         assertTrue("Recovered Saved Place did not open a genuine EPUB rendition",
                 waitFor("!!document.querySelector('#epubStage iframe')", 45));
-        assertTrue("Saved Places did not navigate to the recovered exact EPUB CFI",
-                waitFor(LOCATION + "?.cfi===window.__foliluneRecoveryExpected", 35));
+        // After verifyPersistedEpub changed font size, EPUB.js may reflow and
+        // snap currentLocation().start to the beginning of a new page. That
+        // CFI can differ from the requested saved text anchor. Verify the
+        // *exact requested CFI* reached rendition.display(), that the reader
+        // is in the saved chapter, and that the bookmark remains unchanged.
+        // Exact currentLocation equality without reflow remains covered by
+        // verifyPersistedEpub after Android force-stop.
+        assertTrue("Saved Places did not pass the selected CFI to EPUB.js; "
+                + "debug=" + eval("JSON.stringify({expected:window.__foliluneRecoveryExpected,"
+                + "requested:window.__foliluneQaRequestedDisplay,"
+                + "actual:" + LOCATION + "?.cfi,chapter:" + LOCATION + "?.index})"),
+                waitFor("window.__foliluneQaRequestedDisplay===window.__foliluneRecoveryExpected", 25));
+        assertTrue("Saved Places did not land in the saved EPUB chapter; "
+                + "debug=" + eval("JSON.stringify({actual:" + LOCATION
+                + "?.cfi,index:" + LOCATION + "?.index})"),
+                waitFor(LOCATION + "?.index===1", 20));
+        assertEquals("Saved EPUB bookmark was mutated by the Saved Places jump", "true",
+                eval("(()=>{const st=" + STATE + ";return st.epubBookmarks?.[st.book]"
+                        + "?.includes(window.__foliluneRecoveryExpected)===true})()"));
     }
 
     /**
