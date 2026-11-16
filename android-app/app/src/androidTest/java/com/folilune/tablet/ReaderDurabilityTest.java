@@ -271,4 +271,121 @@ public class ReaderDurabilityTest {
                 + ";return st.epubBookmarks?.[st.book]?.includes("
                 + "localStorage.getItem('folilune_android_qa_cfi'))===true})()"));
     }
+    /**
+     * Simulate a WebView localStorage cache that is older than its committed
+     * IndexedDB reading-state checkpoint. No production state is touched:
+     * this test runs only on the isolated emulator package.
+     */
+    @Test
+    public void poisonLocalCacheForRecovery() throws Exception {
+        awaitApplication();
+        assertEquals("true", eval("window.__folilunePoison='pending';(()=>{"
+                + "const rq=indexedDB.open('folilune_local_library_v3');"
+                + "rq.onsuccess=()=>{const db=rq.result;"
+                + "const tx=db.transaction('books','readonly');"
+                + "const q=tx.objectStore('books').get('__folilune_reading_state_checkpoint_v1__');"
+                + "q.onsuccess=()=>{const saved=q.result?.appState;const id=saved?.book;"
+                + "const marks=saved?.epubBookmarks?.[id];"
+                + "if(!Array.isArray(marks)||marks.length!==1"
+                + "||!saved.readingPositions?.[id]?.cfi){"
+                + "window.__folilunePoison='checkpoint-incomplete';return}"
+                + "const stale=JSON.parse(localStorage.getItem('folilune_atelier_v1')||'{}');"
+                + "stale.durableRevision=0;stale.epubBookmarks={};stale.readingPositions={};"
+                + "localStorage.setItem('folilune_atelier_v1',JSON.stringify(stale));"
+                + "window.__folilunePoison='ready'};"
+                + "q.onerror=()=>window.__folilunePoison='checkpoint-read-failed';"
+                + "tx.oncomplete=()=>db.close()};"
+                + "rq.onerror=()=>window.__folilunePoison='db-open-failed'"
+                + "})();true"));
+        assertTrue("Could not create stale local cache: " + eval("window.__folilunePoison"),
+                waitFor("window.__folilunePoison==='ready'", 20));
+        assertEquals("true", eval("(()=>{const s=" + STATE
+                + ";return s.durableRevision===0"
+                + "&&Object.keys(s.epubBookmarks||{}).length===0"
+                + "&&Object.keys(s.readingPositions||{}).length===0})()"));
+    }
+
+    /** Confirm recovery and open the recovered EPUB bookmark through G2 Saved Places. */
+    @Test
+    public void verifyRecoveredJournalAndSavedPlace() throws Exception {
+        awaitApplication();
+        observeRendition();
+        assertEquals("Journal did not restore the stale local cache", "true",
+                eval("(()=>{const s=" + STATE
+                        + ";const imported=window.FOLILUNE_REAL_UI.snapshot().books"
+                        + ".filter(b=>b.imported&&b.title==='FOLILUNE Tablet QA');"
+                        + "if(imported.length!==1||s.durableRevision<1)return false;"
+                        + "const id=imported[0].id,marks=s.epubBookmarks?.[id];"
+                        + "if(!Array.isArray(marks)||marks.length!==1"
+                        + "||!marks[0].startsWith('epubcfi('))return false;"
+                        + "window.__foliluneRecoveryExpected=marks[0];return true})()"));
+        eval("document.querySelector('.nav-btn[data-view=saved]').click();true");
+        assertTrue("Recovered EPUB bookmark missing from Saved Places",
+                waitFor("document.querySelectorAll('.g2-saved-row').length>=1", 15));
+        assertEquals("true", eval("(()=>{const row=[...document.querySelectorAll('.g2-saved-row')]"
+                + ".find(x=>x.innerText.includes('FOLILUNE Tablet QA'));"
+                + "if(!row)return false;row.click();return true})()"));
+        assertTrue("Recovered Saved Place did not open a genuine EPUB rendition",
+                waitFor("!!document.querySelector('#epubStage iframe')", 45));
+        assertTrue("Saved Places did not navigate to the recovered exact EPUB CFI",
+                waitFor(LOCATION + "?.cfi===window.__foliluneRecoveryExpected", 35));
+    }
+
+    /**
+     * Remove the imported book WHILE its real EPUB renderer is active.
+     * The old code left EPUB bookmarks behind, and rendering during removal
+     * could recreate a deleted reading position from the live rendition.
+     */
+    @Test
+    public void removeImportedBookClearsEpubState() throws Exception {
+        awaitApplication();
+        assertEquals("true", eval("(()=>{const b=window.FOLILUNE_REAL_UI.snapshot().books"
+                + ".find(x=>x.imported&&x.title==='FOLILUNE Tablet QA');"
+                + "if(!b)return false;window.__foliluneDeleteId=b.id;"
+                + "const tile=[...document.querySelectorAll('[data-book]')]"
+                + ".find(x=>x.dataset.book===b.id);"
+                + "if(!tile)return false;tile.click();return true})()"));
+        assertTrue("EPUB did not open before the deletion regression test",
+                waitFor("document.querySelector('#epubPages')?.getAttribute('data-engine')==='epubjs-real'", 45));
+        assertEquals("true", eval("(()=>{window.confirm=()=>true;"
+                + "const b=document.createElement('button');b.dataset.action='remove-import';"
+                + "b.dataset.id=window.__foliluneDeleteId;document.body.appendChild(b);"
+                + "b.click();b.remove();return true})()"));
+        assertTrue("Deleted book retained an EPUB bookmark or reading position",
+                waitFor("(()=>{const s=" + STATE + ";const id=window.__foliluneDeleteId;"
+                        + "return !s.readingPositions?.[id]&&!s.epubBookmarks?.[id]"
+                        + "&&!s.lastOpened?.[id]&&!s.epubModes?.[id]"
+                        + "&&!window.FOLILUNE_REAL_UI.snapshot().books.some(b=>b.id===id)})()", 20));
+        assertEquals("true", eval("window.__foliluneDeletionCommitted=false;(()=>{"
+                + "const check=()=>{const rq=indexedDB.open('folilune_local_library_v3');"
+                + "rq.onsuccess=()=>{const db=rq.result;"
+                + "const tx=db.transaction('books','readonly');"
+                + "const q=tx.objectStore('books').getAll();"
+                + "q.onsuccess=()=>{const rows=q.result,id=window.__foliluneDeleteId;"
+                + "const j=rows.find(x=>x.id==='__folilune_reading_state_checkpoint_v1__');"
+                + "window.__foliluneDeletionCommitted=!!j?.appState"
+                + "&&!rows.some(x=>x.id===id)"
+                + "&&!j.appState.epubBookmarks?.[id]"
+                + "&&!j.appState.readingPositions?.[id]};"
+                + "tx.oncomplete=()=>{db.close();"
+                + "if(!window.__foliluneDeletionCommitted)setTimeout(check,150)};"
+                + "};rq.onerror=()=>setTimeout(check,200)};check()})();true"));
+        assertTrue("Deleted book or saved location remained in committed IndexedDB",
+                waitFor("window.__foliluneDeletionCommitted===true", 20));
+    }
+
+    @Test
+    public void verifyDeletedBookDoesNotReappear() throws Exception {
+        awaitApplication();
+        assertEquals("Deleted book or bookmark resurrected after process restart", "true",
+                eval("(()=>{const s=" + STATE
+                        + ";const b=window.FOLILUNE_REAL_UI.snapshot().books;"
+                        + "return b.filter(x=>x.imported).length===0"
+                        + "&&!Object.keys(s.readingPositions||{}).some(x=>x.startsWith('local-'))"
+                        + "&&!Object.keys(s.epubBookmarks||{}).some(x=>x.startsWith('local-'))"
+                        + "&&!Object.keys(s.lastOpened||{}).some(x=>x.startsWith('local-'))})()"));
+        eval("document.querySelector('.nav-btn[data-view=saved]').click();true");
+        assertEquals("true", eval("document.querySelectorAll('.g2-saved-row').length===0"));
+    }
+
 }
