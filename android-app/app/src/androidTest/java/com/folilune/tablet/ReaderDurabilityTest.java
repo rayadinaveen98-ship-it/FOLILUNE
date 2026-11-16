@@ -61,7 +61,13 @@ public class ReaderDurabilityTest {
             if (dir != null) path.set(new File(dir, filename));
         });
         assertNotNull("App external-files directory unavailable", path.get());
-        Thread.sleep(550); // Allow the skippable 420ms welcome transition to settle.
+        // Wait for Android view idleness and the WebView compositor, which
+        // may lag behind evaluateJavascript's acknowledgement. A prior intro
+        // capture showed the previous Home frame despite a visible modal flag.
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        Thread.sleep(filename.startsWith("g2-welcome") ? 1700 : 2800);
+        // Home screenshots are captured after the existing 2.5s toast exits,
+        // preventing transient status UI from obscuring layout review.
         Bitmap shot = InstrumentationRegistry.getInstrumentation()
                 .getUiAutomation().takeScreenshot();
         assertNotNull("Android UiAutomation screenshot unavailable", shot);
