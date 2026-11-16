@@ -240,13 +240,24 @@ public class ReaderDurabilityTest {
                 waitFor(LOCATION + "?.index===1 && " + LOCATION + "?.cfi!=="
                         + before, 20));
         assertEquals("true", eval(LOCATION + "?.cfi?.startsWith('epubcfi(')===true"));
-        assertEquals("true", eval("(()=>{const state=" + STATE
-                + ";const id=state.book;const saved=state.readingPositions?.[id]?.cfi;"
+        // EPUB.js relocation is asynchronous. Do not compare the saved CFI to
+        // the live page-start in the same tick as a page-turn click. Require
+        // eventual exact equality; this does not relax the persisted CFI gate.
+        boolean cfiSynced=waitFor("(()=>{const state=" + STATE
+                + ";const saved=state.readingPositions?.[state.book]?.cfi;"
                 + "const actual=" + LOCATION + "?.cfi;"
-                + "if(saved!==actual)return false;"
+                + "return typeof actual==='string'&&actual===saved})()", 20);
+        if(!cfiSynced)fail("Live and saved CFI did not converge after page turn: "
+                + eval("(()=>{const st=" + STATE
+                + ";return JSON.stringify({book:st.book,"
+                + "saved:st.readingPositions?.[st.book]?.cfi,"
+                + "live:" + LOCATION + "?.cfi,"
+                + "chapter:" + LOCATION + "?.index})})()"));
+        assertEquals("true", eval("(()=>{const state=" + STATE
+                + ";const id=state.book;const actual=" + LOCATION + "?.cfi;"
                 + "localStorage.setItem('folilune_android_qa_cfi',actual);"
                 + "localStorage.setItem('folilune_android_qa_id',id);"
-                + "return true})()"));
+                + "return typeof actual==='string'})()"));
 
         eval("document.querySelector('[data-action=bookmark]').click();true");
         assertEquals("Bookmark CFI not saved exactly", "true",
