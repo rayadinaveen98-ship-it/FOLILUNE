@@ -267,9 +267,13 @@ public class ReaderDurabilityTest {
         eval("document.querySelector('[data-action=font-up]').click();true");
         assertTrue("Font resizing moved the reader out of the saved chapter",
                 waitFor(LOCATION + "?.index===1", 15));
-        assertEquals("true", eval("(()=>{const st=" + STATE
-                + ";return st.epubBookmarks?.[st.book]?.includes("
-                + "localStorage.getItem('folilune_android_qa_cfi'))===true})()"));
+        // The QA-only CFI marker is not part of the durable reading-state
+        // contract. Compare against the actual saved CFI already validated
+        // above, including after the font reflow.
+        assertEquals("Reader font resize discarded the durable EPUB bookmark", "true",
+                eval("(()=>{const st=" + STATE + ";const expected=" + EXPECTED_BOOKMARK + ";"
+                        + "return typeof expected==='string'"
+                        + " && st.epubBookmarks?.[st.book]?.includes(expected)===true})()"));
     }
     /**
      * Simulate a WebView localStorage cache that is older than its committed
