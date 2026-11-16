@@ -21,17 +21,21 @@
   const local=()=>all().filter(b=>b.imported);
   function lastRead(list){return list.slice().sort((a,b)=>Number(b.lastOpened||0)-Number(a.lastOpened||0))[0];}
   function home(){
-    const own=local(),recent=lastRead(own.filter(b=>b.lastOpened))||lastRead(own);
+    const own=local(),opened=lastRead(own.filter(b=>b.lastOpened)),fresh=own[0]||null;
     const artwork='<div class="hero-art"></div>';
-    const intro=recent?
-      '<div class="eyebrow">YOUR STORY IS HERE</div><h2>'+safe(recent.title)+'</h2>'+
-      '<p>Return to the page you last visited. Your reading position is stored on this device.</p>'+
-      '<button class="primary" data-book="'+safe(recent.id)+'">Continue reading &nbsp; ↗</button>':
+    const intro=opened?
+      '<div class="eyebrow">PICK UP WHERE YOU LEFT OFF</div><h2>'+safe(opened.title)+'</h2>'+
+      '<p>Continue your last opened book. Your reading position is saved locally.</p>'+
+      '<button class="primary" data-book="'+safe(opened.id)+'">Continue reading &nbsp; ↗</button>':
+      fresh?
+      '<div class="eyebrow">READY FOR YOUR FIRST PAGE</div><h2>'+safe(fresh.title)+'</h2>'+
+      '<p>Your book is on this device. Open it to begin reading at your own pace.</p>'+
+      '<button class="primary" data-book="'+safe(fresh.id)+'">Open book &nbsp; ↗</button>':
       '<div class="eyebrow">BEGIN WITH A BOOK</div>'+
       '<p class="g2-home-promise">Choose a DRM-free EPUB, TXT or Markdown file to begin. Your book stays on this device.</p>'+
       '<button class="primary" data-action="import-file">Add your first book &nbsp; ↗</button>';
     const samples=all().filter(b=>!b.imported).slice(0,3);
-    return '<div class="content g2-content g2-home'+(own.length?' g2-home-occupied':' g2-home-empty')+'">'+heading('YOUR PRIVATE READING ROOM',recent?'Welcome back.':'A world between pages.',recent?'Your last opened book is ready.':'A quiet reading room for the books you own. No account needed.')+
+    return '<div class="content g2-content g2-home'+(own.length?' g2-home-occupied':' g2-home-empty')+'">'+heading('YOUR PRIVATE READING ROOM',opened?'Welcome back.':fresh?'Your library begins here.':'A world between pages.',opened?'Continue the last book you opened.':fresh?'Your imported book is ready to open.':'A quiet reading room for the books you own. No account needed.')+
       '<section class="hero g2-hero"><div class="hero-copy">'+intro+'</div>'+artwork+
       (own.length?'<div class="hero-progress">'+safe(own.length)+' local '+(own.length===1?'book':'books')+'</div>':'')+'</section>'+
       '<section class="g2-section"><div class="section-title"><h2>On your reading desk</h2><button data-view="library">See your library ↗</button></div>'+

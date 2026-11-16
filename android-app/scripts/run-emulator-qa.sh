@@ -74,6 +74,9 @@ adb shell am start -W -n com.folilune.vnextreader/com.folilune.tablet.MainActivi
 sleep 7
 adb shell screencap -p /sdcard/Download/folilune-g1-home.png
 adb pull /sdcard/Download/folilune-g1-home.png android-app/qa-logs/folilune-g1-home.png
+for shot in g2-home-fresh-book.png g2-home-returning-book.png g2-welcome-intro.png g2-welcome-comfort.png g2-welcome-import.png; do
+  adb pull "/sdcard/Android/data/com.folilune.vnextreader/files/$shot" "android-app/qa-logs/$shot"
+done
 cp /tmp/folilune-seed.log /tmp/folilune-reopen.log /tmp/folilune-stale-cache.log /tmp/folilune-journal-recovery.log /tmp/folilune-book-removal.log /tmp/folilune-deletion-restart.log /tmp/folilune-g2-ui-a11y.log /tmp/folilune-g2-onboarding.log android-app/qa-logs/ 2>/dev/null || true
 
 echo "FOLILUNE vNext G1 real-EPUB WebView persistence tests passed"

@@ -2,6 +2,10 @@ package com.folilune.tablet;
 
 import android.view.ViewGroup;
 import android.webkit.WebView;
+import android.graphics.Bitmap;
+
+import java.io.File;
+import java.io.FileOutputStream;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -44,6 +48,29 @@ public class ReaderDurabilityTest {
         });
         assertTrue("WebView JavaScript callback timed out", done.await(20, TimeUnit.SECONDS));
         return result.get();
+    }
+
+    /** Store real instrumentation screenshots from synthetic test data only.
+     * Saved in this experimental package's external-files directory for the
+     * CI runner to pull into the QA artifact; never reads another app's data.
+     */
+    private void captureUi(String filename) throws Exception {
+        AtomicReference<File> path = new AtomicReference<>();
+        scenario.getScenario().onActivity(a -> {
+            File dir = a.getExternalFilesDir(null);
+            if (dir != null) path.set(new File(dir, filename));
+        });
+        assertNotNull("App external-files directory unavailable", path.get());
+        Thread.sleep(550); // Allow the skippable 420ms welcome transition to settle.
+        Bitmap shot = InstrumentationRegistry.getInstrumentation()
+                .getUiAutomation().takeScreenshot();
+        assertNotNull("Android UiAutomation screenshot unavailable", shot);
+        try (FileOutputStream stream = new FileOutputStream(path.get())) {
+            assertTrue("Unable to write QA screenshot: " + filename,
+                    shot.compress(Bitmap.CompressFormat.PNG, 100, stream));
+        } finally {
+            shot.recycle();
+        }
     }
 
     private boolean waitFor(String expression, int seconds) throws Exception {
@@ -165,6 +192,30 @@ public class ReaderDurabilityTest {
         assertTrue("Imported EPUB did not open its reading surface",
                 waitFor("!!document.querySelector('#epubStage iframe') && document.body.innerText.includes('FOLILUNE Tablet QA')", 50));
         assertEquals("true", eval("!document.body.innerText.includes('Session only: FOLILUNE Tablet QA')"));
+        // New imports have no lastOpened timestamp: do not falsely advertise
+        // a previously saved page. Then exercise the real openBook path.
+        eval("document.querySelector('.nav-btn[data-view=home]').click();true");
+        assertEquals("Fresh import falsely says Continue reading", "true",
+                eval("(()=>{const h=document.querySelector('.g2-home-occupied');"
+                        + "const c=h?.querySelector('.g2-hero .primary');"
+                        + "return !!c&&c.textContent.includes('Open book')"
+                        + "&&h.textContent.includes('FOLILUNE Tablet QA')"
+                        + "&&!h.querySelector('.g2-hero').textContent.includes('Continue reading')})()"));
+        captureUi("g2-home-fresh-book.png");
+        assertEquals("true", eval("(()=>{document.querySelector('.g2-hero .primary').click();"
+                + "return true})()"));
+        assertTrue("Fresh book hero did not launch real EPUB reader",
+                waitFor("!!document.querySelector('#epubStage iframe')", 35));
+        eval("document.querySelector('.nav-btn[data-view=home]').click();true");
+        assertEquals("Opened book did not become the real Continue action", "true",
+                eval("(()=>{const h=document.querySelector('.g2-home-occupied');"
+                        + "const c=h?.querySelector('.g2-hero .primary');"
+                        + "return !!c&&c.textContent.includes('Continue reading')"
+                        + "&&h.querySelector('.g2-hero').textContent.includes('FOLILUNE Tablet QA')})()"));
+        captureUi("g2-home-returning-book.png");
+        eval("document.querySelector('.g2-hero .primary').click();true");
+        assertTrue("Continue action failed to reopen EPUB", 
+                waitFor("!!document.querySelector('#epubStage iframe')", 35));
         // Add a stable local checkpoint that must survive process death.
         assertEquals("true", eval("(()=>{localStorage.setItem('folilune_android_qa','durable');return localStorage.getItem('folilune_android_qa')==='durable'})()"));
         // Navigate inside the REAL EPUB.js rendition, then capture the exact CFI.
@@ -520,14 +571,17 @@ public class ReaderDurabilityTest {
                 + "window.FOLILUNE_G1.showWelcome();"
                 + "return !document.querySelector('#vnWelcome').hidden"
                 + "&&document.querySelector('#vnComfort').classList.contains('vn-hidden')})()"));
+        captureUi("g2-welcome-intro.png");
         assertEquals("true", eval("(()=>{document.querySelector('#vnContinue').click();"
                 + "return !document.querySelector('#vnComfort').classList.contains('vn-hidden')"
                 + "&&document.querySelector('#vnImport').classList.contains('vn-hidden')})()"));
+        captureUi("g2-welcome-comfort.png");
         assertEquals("true", eval("(()=>{document.querySelector('#vnContinue').click();"
                 + "const b=document.querySelector('#vnContinue');"
                 + "return !document.querySelector('#vnImport').classList.contains('vn-hidden')"
                 + "&&b.textContent.includes('Import a book')"
                 + "&&!!document.querySelector('#importBookInput')})()"));
+        captureUi("g2-welcome-import.png");
         assertEquals("true", eval("(()=>{document.querySelector('#vnSkip').click();"
                 + "return document.querySelector('#vnWelcome').hidden"
                 + "&&!document.querySelector('#app').inert"
