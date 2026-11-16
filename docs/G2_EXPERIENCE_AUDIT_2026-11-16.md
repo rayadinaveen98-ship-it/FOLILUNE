@@ -44,7 +44,7 @@
 6. Force-stop and verify no deleted book/bookmark reappears.
 7. Capture emulator screenshot.
 
-**Verification state:** Patch committed as `3bac6a5691bc5489aa5bcb44f90ad5b2aa581f9b`. New CI conclusions must be inspected before marking TESTED. A passing emulator run still does not close physical tablet or migration gates.
+**Verification state (2026-11-16):** Data-deletion fix committed as `3bac6a5691bc5489aa5bcb44f90ad5b2aa581f9b`. At `d2ad0d4`, both the independent durability workflow [43830285622](https://github.com/rayadinaveen98-ship-it/FOLILUNE/actions/runs/43830285622) and a prior run [43830137359](https://github.com/rayadinaveen98-ship-it/FOLILUNE/actions/runs/43830137359) failed at the Saved Places assertion after font-size reflow; stage 1–3 passed. An integrated run [43830285390](https://github.com/rayadinaveen98-ship-it/FOLILUNE/actions/runs/43830285390) passed the full seven-stage pipeline at the same head, identifying an intermittent and overly strict exact-page-start assertion. The test at `9c4987c` now captures the exact requested `rendition.display(CFI)` target, verifies the correct chapter and retained bookmark after reflow, and preserves the unchanged-viewport exact-CFI restart assertion. At **`9c4987c`**, all three workflows passed: [APK build 43833983577](https://github.com/rayadinaveen98-ship-it/FOLILUNE/actions/runs/43833983577), [independent durability 43833983425](https://github.com/rayadinaveen98-ship-it/FOLILUNE/actions/runs/43833983425), [integrated EPUB/CFI 43833983443](https://github.com/rayadinaveen98-ship-it/FOLILUNE/actions/runs/43833983443). **This proves the corrected emulator test contracts at that exact SHA only**; reflow position on real hardware, rapid-activity stress, physical tablet, accessibility and migration remain open.
 
 ## Lunar Editorial design acceptance — APPROVED direction, PROPOSED details
 **Creative principle:** Paper Modernist grid discipline + Lunar Editorial warmth. Reading content is the hero; expressive moments are quiet, meaningful and skippable.
@@ -77,4 +77,14 @@
 
 **Not authorized by this approval:** G3 native EPUB highlights, custom collections, account/cloud sync, AI, PDF/CBZ engine, monetization, new paid infrastructure, v12 data migration, merging draft PRs, production signing or release.
 
-**Next:** inspect CI for `3bac6a5`, fix only demonstrated regressions, request real tablet observations, and present the Lunar Editorial icon + core-flow design for visual signoff. Track P0 data integrity/accessibility before decorative polish.
+**Next:** verify the new G2 touch-area CSS against current CI; then test compact/expanded widths, TalkBack, 200% text scaling, portrait/landscape and real-tablet Saved Places. Present Lunar Editorial visuals for owner signoff without rewriting the reader engine. Track P0 data integrity/accessibility before decorative polish.
+
+
+## 2026-11-16 focused security and accessibility source inspection
+**Inspection, not penetration-test certification.** `MainActivity.java` enables JavaScript for EPUB.js but disables direct file access, file-URL-to-file access and universal access from file URLs; disallows mixed content; enables Safe Browsing on supported APIs; blocks remote HTTP(S) resource loads; uses a fixed allowlist for locally bundled UI assets; and denies WebView permission requests. No native `addJavascriptInterface` was found in the inspected activity. These are positive controls, not a guarantee against hostile EPUBs.
+
+**Open risk:** `shouldOverrideUrlLoading` explicitly blocks external HTTP(S) top-level navigation but returns false for other URI schemes; the EPUB pipeline and the WebView's content-URI picker access must be exercised with untrusted/invalid content and disallowed scheme tests before security signoff. No production change has been authorized to this subsystem without a failing reproduction and regression test.
+
+**Visual accessibility:** G2 source styles have 44–45px minimums for some navigation, choice and font stepper controls, less than the 48dp Android target. A narrowly scoped G2 CSS correction moves these hit areas to 48 CSS pixels as a test candidate, with no change to EPUB rendering, stored data or palette. CSS pixels must still be verified against actual Android dp hit areas and TalkBack focus; do not call this fully accessible yet.
+
+**Design system:** The [Lunar Editorial G2 system candidate](LUNAR_EDITORIAL_G2_SYSTEM_CANDIDATE_2026-11-16.md) records existing source values, measured contrast pairs, proposed token grammar, motion and review gates. Direction APPROVED; detailed token values/mark/screens CANDIDATE pending visual acceptance.

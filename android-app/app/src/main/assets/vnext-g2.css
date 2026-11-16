@@ -93,3 +93,12 @@
  .g2-settings{grid-template-columns:1fr}
 }
 @media(max-width:370px){.g2-book-cover{height:165px}.g2-cover-title{font-size:14px}.g2-shelf{gap:9px}.g2-heading .page-title{font-size:30px}}
+
+/* Lunar Editorial G2 functional accessibility baseline. Existing color, type,
+   renderer and page geometry remain unchanged pending visual signoff. */
+:root{--le-g2-hit-min:48px}
+.nav-btn,.g2-book,.g2-choice,.g2-step button,.g2-toolbar select,
+.g2-toolbar .primary,.g2-saved-row,.g2-section .section-title button{
+  min-height:var(--le-g2-hit-min);
+}
+.g2-step button{width:var(--le-g2-hit-min);height:var(--le-g2-hit-min)}
