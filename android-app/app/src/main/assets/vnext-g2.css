@@ -115,7 +115,7 @@
 .g2-content .primary,
 .g2-content .secondary,
 .g2-content .pill,
-.g2b-note-foot .secondary,
-.g2b-help-aside .secondary{
+.g2-content .g2b-note-foot .secondary,
+.g2-content .g2b-help-aside .secondary{
   min-height:var(--le-g2-hit-min);
 }
