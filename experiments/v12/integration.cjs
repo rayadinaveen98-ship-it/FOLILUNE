@@ -1,0 +1,78 @@
+const fs=require('fs'),http=require('http'),JSZip=require('jszip'),{chromium}=require('playwright-core');
+const results=[],check=(name,pass,detail='')=>{results.push({name,pass:!!pass,detail});console.log((pass?'PASS ':'FAIL ')+name+': '+detail)};
+const xml=s=>'<?xml version="1.0" encoding="UTF-8"?>'+s;
+async function test(){let browser,server;try{
+const z=new JSZip();z.file('mimetype','application/epub+zip',{compression:'STORE'});
+z.file('META-INF/container.xml',xml('<container xmlns="urn:oasis:names:tc:opendocument:xmlns:container" version="1.0"><rootfiles><rootfile full-path="OEBPS/book.opf" media-type="application/oebps-package+xml"/></rootfiles></container>'));
+z.file('OEBPS/book.opf',xml('<package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="id"><metadata xmlns:dc="http://purl.org/dc/elements/1.1/"><dc:identifier id="id">folilune-v11</dc:identifier><dc:title>FOLILUNE Original Test</dc:title><dc:creator>FOLILUNE</dc:creator><dc:language>en</dc:language><meta property="dcterms:modified">2026-11-11T00:00:00Z</meta></metadata><manifest><item id="n" href="nav.xhtml" media-type="application/xhtml+xml" properties="nav"/><item id="a" href="a.xhtml" media-type="application/xhtml+xml"/><item id="b" href="b.xhtml" media-type="application/xhtml+xml"/><item id="i" href="art.png" media-type="image/png"/></manifest><spine><itemref idref="a"/><itemref idref="b"/></spine></package>'));
+z.file('OEBPS/nav.xhtml',xml('<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops"><head><title>Contents</title></head><body><nav epub:type="toc"><ol><li><a href="a.xhtml">Chapter One</a></li><li><a href="b.xhtml">Chapter Two</a></li></ol></nav></body></html>'));
+z.file('OEBPS/a.xhtml',xml('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Chapter One</title></head><body><h1>Chapter One</h1><p>Original FOLILUNE reader-engine test prose.</p><p><em>Preserve expressive writing.</em></p><img src="art.png" alt="Original test illustration"/></body></html>'));
+z.file('OEBPS/b.xhtml',xml('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Chapter Two</title></head><body><h1>Chapter Two</h1><p>A second original chapter for navigation verification.</p></body></html>'));
+z.file('OEBPS/art.png',Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/LXYAAAAASUVORK5CYII=','base64'));
+const bytes=await z.generateAsync({type:'nodebuffer',compression:'DEFLATE'});
+server=http.createServer((req,res)=>{res.writeHead(200,{'content-type':'text/html; charset=utf-8','cache-control':'no-store'});res.end(fs.readFileSync('prototypes/modern-atelier-integrated-v12.html'))});await new Promise(r=>server.listen(0,'127.0.0.1',r));
+browser=await chromium.launch({executablePath:process.env.CHROME_PATH||'/usr/bin/google-chrome',headless:true,args:['--no-sandbox','--disable-dev-shm-usage']});
+for(const [width,height] of [[1440,900],[960,760],[390,844]]){
+  const context=await browser.newContext({viewport:{width,height},acceptDownloads:true});
+  const page=await context.newPage(),errors=[],external=[];
+  page.on('pageerror',e=>errors.push(e.message));
+  page.on('request',r=>{if(/^https?:\/\//.test(r.url())&&!r.url().startsWith('http://127.0.0.1:'))external.push(r.url())});
+  page.setDefaultTimeout(10000);
+  await page.goto('http://127.0.0.1:'+server.address().port);
+  check(width+': home is visible',await page.locator('#screen .hero').count()===1);
+  if(width<600)await page.locator('#screen button[data-view="library"]').first().click();
+  else await page.locator('button[data-view="library"]').first().click();
+  check(width+': library visible',await page.locator('.library-header').count()===1);
+  await page.locator('#importBookInput').setInputFiles({name:'FOLILUNE-original-test.epub',mimeType:'application/epub+zip',buffer:bytes});
+  await page.locator('#epubPages[data-engine="epubjs-real"]').waitFor({timeout:14000});
+  const first=await page.evaluate(()=>{const d=document.querySelector('#epubStage iframe')?.contentDocument;return {text:d?.body?.innerText||'',image:[...(d?.images||[])].some(x=>x.complete&&x.naturalWidth>0)}});
+  check(width+': original chapter displayed',first.text.includes('Chapter One'));
+  check(width+': EPUB embedded image decoded',first.image);
+  await page.locator('button[data-panel="contents"]').click();
+  check(width+': two TOC chapters',await page.locator('[data-epub-href]').count()===2);
+  const dbg=async(label)=>{const snap=await page.evaluate(()=>{const state=JSON.parse(localStorage.getItem('folilune_atelier_v1')||'{}');const id=Object.keys(state.readingPositions||{}).find(x=>x.startsWith('local-'));return {view:state.view,book:state.book,mode:state.epubModes?.[id],position:state.readingPositions?.[id],chapterState:state.storyChapter,iframeText:document.querySelector('#epubStage iframe')?.contentDocument?.body?.innerText?.slice(0,110),engine:document.querySelector('#epubPages')?.getAttribute('data-engine'),renderingNote:document.querySelector('#epubLoading')?.textContent}});console.log('SNAPSHOT '+width+' '+label+': '+JSON.stringify(snap))};
+  await page.locator('[data-epub-href]').nth(1).click();
+  await page.waitForFunction(()=>document.querySelector('#epubStage iframe')?.contentDocument?.body?.innerText?.includes('Chapter Two'),null,{timeout:14000});
+  check(width+': real chapter two navigation',true);
+  const cfi=await page.evaluate(()=>{const state=JSON.parse(localStorage.getItem('folilune_atelier_v1')||'{}');const id=Object.keys(state.readingPositions||{}).find(x=>x.startsWith('local-'));return state.readingPositions?.[id]?.cfi||''});
+  check(width+': real EPUB CFI checkpoint',cfi.startsWith('epubcfi('),cfi.slice(0,65));
+  await page.locator('button[data-panel="settings"]').click();
+  await page.locator('[data-action="font-up"]').click();
+  await page.waitForFunction(()=>document.querySelector('#epubStage iframe')?.contentDocument?.body?.innerText?.includes('Chapter Two'),null,{timeout:11000});
+  check(width+': font resize preserves chapter two content',true);
+  await page.locator('[data-tone="night"]').click();
+  check(width+': night theme',await page.locator('.reader-shell.night').count()===1);
+
+  await page.locator('[data-action="bookmark"]').click();
+  await page.locator('[data-panel="notes"]').click();
+  check(width+': saved EPUB CFI bookmark',await page.locator('[data-epub-cfi]').count()>0);
+  await dbg('before-preview');
+  await page.locator('[data-action="epub-preview"]').click();
+  check(width+': text preview fallback',await page.locator('#selectableStory').count()===1);
+  await page.locator('[data-panel="settings"]').click();
+  await page.locator('[data-action="epub-full"]').click();
+  await page.locator('#epubPages[data-engine="epubjs-real"]').waitFor({timeout:14000});
+  check(width+': returns to genuine renderer',await page.locator('#epubStage iframe').count()===1);
+  await dbg('after-back-to-full');
+  await page.locator('#screen button[data-view="library"]').click();
+  await dbg('before-reload-library');
+  await page.reload({waitUntil:'domcontentloaded'});
+  await page.locator('[data-book^="local-"]').first().waitFor({timeout:14000});
+  await dbg('after-reload-library');
+  await page.locator('[data-book^="local-"]').first().click();
+  await page.locator('#epubPages[data-engine="epubjs-real"]').waitFor({timeout:14000});
+  await dbg('after-reopen');
+  await page.waitForTimeout(800);
+  await dbg('after-reopen-800ms');
+  await page.waitForFunction(()=>document.querySelector('#epubStage iframe')?.contentDocument?.body?.innerText?.includes('Chapter Two'),null,{timeout:3500});
+  check(width+': saved EPUB source and chapter restored after reload',true);
+  check(width+': no horizontal overflow',await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+6));
+  check(width+': zero uncaught browser errors',errors.length===0,errors.join('; ')||'none');
+  check(width+': no remote network requests',external.length===0,external.join('; ')||'none');
+  fs.mkdirSync('experiments/v12/results',{recursive:true});
+  await page.screenshot({path:'experiments/v12/results/reader-'+width+'.png'});
+  await context.close();
+}
+}catch(e){check('Engine test executed',false,e.stack||String(e))}
+finally{if(browser)await browser.close().catch(()=>{});if(server)await new Promise(r=>server.close(r));fs.mkdirSync('experiments/v12/results',{recursive:true});fs.writeFileSync('experiments/v12/results/report.json',JSON.stringify({engine:'epubjs@0.3.93',mode:'REAL integrated EPUB.js within Modern Atelier — no mocks',checks:results},null,2));if(results.some(x=>!x.pass))process.exitCode=1;}}
+test().catch(e=>{console.error(e);process.exitCode=1});

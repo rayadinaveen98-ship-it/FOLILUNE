@@ -1,0 +1,51 @@
+# FOLILUNE v12 isolated integration QA — no deployment, no production writes.
+name: FOLILUNE v12 — integrated real EPUB reader
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'experiments/v12/**'
+      - 'prototypes/modern-atelier-integrated-v12.html'
+      - '.github/workflows/folilune-epub-v12.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  integrated-reader:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout experiment
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Use Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install pinned test dependencies
+        run: npm install --no-audit --no-fund --ignore-scripts --no-save jszip@3.10.1 playwright-core@1.56.1
+      - name: Locate Chrome
+        shell: bash
+        run: |
+          set -euo pipefail
+          CHROME="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
+          if [ -z "$CHROME" ]; then
+            echo "Chrome not found; cannot verify real EPUB browser integration"
+            exit 1
+          fi
+          echo "CHROME_PATH=$CHROME" >> "$GITHUB_ENV"
+      - name: Check syntax
+        run: node --check experiments/v12/integration.cjs
+      - name: Run integrated reader on actual HTTP origin
+        run: node experiments/v12/integration.cjs
+      - name: Archive browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: folilune-v12-integrated-reader-results
+          path: experiments/v12/results/
+          if-no-files-found: warn
+          retention-days: 3
