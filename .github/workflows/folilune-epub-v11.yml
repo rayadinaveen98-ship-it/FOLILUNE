@@ -1,0 +1,71 @@
+# Isolated, real EPUB.js integration test. No production deployment, no paid runner.
+name: FOLILUNE — real EPUB engine experiment v11
+on:
+  push:
+    branches:
+      - experiment/epubjs-real-render-v11
+    paths:
+      - '.github/workflows/folilune-epub-v11.yml'
+      - 'experiments/v11/**'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'experiments/v11/**'
+      - '.github/workflows/folilune-epub-v11.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  real-render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Check out isolated experiment
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Set up Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install pinned reader and browser driver
+        run: npm install --no-audit --no-fund --ignore-scripts --no-save epubjs@0.3.93 jszip@3.10.1 playwright-core@1.56.1
+      - name: Find preinstalled Chrome
+        shell: bash
+        run: |
+          set -euo pipefail
+          CHROME="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
+          if [ -z "$CHROME" ]; then
+            echo "GitHub runner has no Chrome executable; engine not tested."
+            exit 1
+          fi
+          echo "CHROME_PATH=$CHROME" >> "$GITHUB_ENV"
+      - name: Syntax-check unmocked browser suite
+        run: node --check experiments/v11/real-engine.cjs
+      - name: Render original EPUB in real Chromium with installed EPUB.js
+        run: node experiments/v11/real-engine.cjs
+      - name: Preserve the exact tested open-source browser bundles
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p experiments/v11/results/vendor
+          if [ -f node_modules/epubjs/dist/epub.min.js ]; then cp node_modules/epubjs/dist/epub.min.js experiments/v11/results/vendor/epubjs-0.3.93.min.js; fi
+          if [ -f node_modules/jszip/dist/jszip.min.js ]; then cp node_modules/jszip/dist/jszip.min.js experiments/v11/results/vendor/jszip-3.10.1.min.js; fi
+          for src in node_modules/epubjs/license node_modules/epubjs/LICENSE; do
+            if [ -f "$src" ]; then cp "$src" experiments/v11/results/vendor/LICENSE-epubjs.txt; break; fi
+          done
+          for src in node_modules/jszip/LICENSE.markdown node_modules/jszip/LICENSE; do
+            if [ -f "$src" ]; then cp "$src" experiments/v11/results/vendor/LICENSE-jszip.txt; break; fi
+          done
+      - name: Archive observed browser results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: folilune-epub-v11-engine-evidence
+          path: experiments/v11/results/
+          if-no-files-found: warn
+          retention-days: 3
